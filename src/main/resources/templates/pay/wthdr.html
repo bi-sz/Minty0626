@@ -28,8 +28,8 @@
           보유 잔고
         </div>
         <div style="text-align: center;">
-          <div class="balance" style="width: 80%; text-align: center;" >
-            <span th:text="${user.balance}"></span>
+          <div class="balance" style="width: 100%; text-align: center;" >
+            <span class="user-m" th:text="${user.balance}"></span>원
           </div>
         </div>
       </h1>
@@ -39,11 +39,11 @@
 
 <div style="display: flex; flex-direction: column; align-items: center;">
   <label for="amount" style="display: block; margin: 0 auto; text-align: center;">출금 금액</label>
-  <input style="font-weight: 700; font-size: 16px; width: 300px; height: 40px; display: block; margin: 0 auto; text-align: center;" type="text" id="amount" name="amount" placeholder="출금할 금액을 입력하세요." required oninput="updateAmount();" />
+  <input style="font-weight: 700; font-size: 16px; width: 300px; height: 40px; display: block; margin: 0 auto; text-align: center;" type="text" id="amount" name="amount" placeholder="출금할 금액을 입력하세요." required readonly />
   <span style="color:red;" class="validateAmount"></span>
   <button type="button" onclick="resetAmount(0)" style="margin-left: 10px;">초기화</button>
   <div style="display: flex; justify-content: center;">
-    <button type="button" onclick="addAmount(1000000)" style="margin: 10px;">+1000,000원</button>
+    <button type="button" onclick="totalMoney()" style="margin: 10px;">전액</button>
     <button type="button" onclick="addAmount(100000)" style="margin: 10px;">+100,000원</button>
     <button type="button" onclick="addAmount(10000)" style="margin: 10px;">+10,000원</button>
     <button type="button" onclick="addAmount(1000)" style="margin: 10px;">+1,000원</button>
@@ -52,7 +52,15 @@
 </div>
 
 <script>
+
+
   let amount = 0;
+
+       function totalMoney(){
+  var balance = $(".user-m").text(); // .val() 대신 .text()를 사용하여 값을 가져옵니다.
+  $("#amount").val(balance); // 가져온 값을 입력 창에 설정합니다.
+}
+
 
         function isNumberKey(evt) {
             var charCode = (evt.which) ? evt.which : event.keyCode;
@@ -86,6 +94,7 @@
               withdrawButton.disabled = false;
             }
         }
+
 
         function resetAmount(value) {
             updateAmount();

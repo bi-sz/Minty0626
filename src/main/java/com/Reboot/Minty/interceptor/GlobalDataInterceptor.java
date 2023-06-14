@@ -47,7 +47,7 @@ public class GlobalDataInterceptor implements HandlerInterceptor {
             if (!approvedImages.isEmpty()) {
                 int randomIndex = (int) (Math.random() * approvedImages.size());
                 Ad ad = approvedImages.get(randomIndex);
-                modelAndView.addObject("ad", ad);
+                modelAndView.addObject("advertise", ad);
 
                 String imagePath = "adimage/";
             }

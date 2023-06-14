@@ -116,10 +116,17 @@ public class TradeController {
             Trade trade = tradeService.save(tradeBoard, buyer, seller);
             return ResponseEntity.ok("/trade/" + trade.getId());
         } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("/trade/"+e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred.");
         }
+    }
+
+    @GetMapping(value = "tradeDetail/{tradeId}")
+    public String tradtradeDetaile(@PathVariable(value = "tradeId") Long tradeId, Model model, HttpServletRequest request)  {
+
+
+        return "/";
     }
 
 }

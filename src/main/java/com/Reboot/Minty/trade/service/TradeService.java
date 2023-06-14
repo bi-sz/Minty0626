@@ -48,9 +48,9 @@ public class TradeService {
 
     public Trade save(TradeBoard tradeBoard, User buyer, User seller) {
         tradeBoard = tradeBoardRepository.save(tradeBoard);
-        int existingTrades = tradeRepository.countByBoardIdAndBuyerIdAndSellerId(tradeBoard, buyer, seller);
-        if(existingTrades > 0){
-            throw new IllegalStateException("이미 존재하는 구매 요청입니다.");
+        Trade existingTrades = tradeRepository.findByBoardIdAndBuyerIdAndSellerId(tradeBoard, buyer, seller);
+        if(existingTrades != null){
+            throw new IllegalStateException(String.valueOf(existingTrades.getId()));
         }
         else {
             Trade trade = new Trade();

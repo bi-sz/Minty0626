@@ -105,20 +105,13 @@
   cursor: pointer;
 }
 
- .ad .close-btn {
-        position: absolute;
-        top: -15px;
-        font-size: 40px;
-        color: black;
-        cursor: pointer;
-    }
 
   </style>
   </head>
   <!--광고배너-->
   <div class="ad">
     <span class="close-btn" onclick="closeAd()">×</span>
-    <img th:src="@{|/adimage/${ad.image}|}" alt="Ad Image">
+    <img th:src="@{|/adimage/${advertise.image}|}" alt="Ad Image">
   </div>
 
 
@@ -168,12 +161,6 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-
-       function closeAd() {
-        var adCard = document.getElementsByClassName('ad-card')[0];
-        adCard.style.display = 'none';
-    }
-
   $(document).ready(function() {
     $(".up").click(function() {
       $("html, body").animate({ scrollTop: 0 }, 800);
@@ -184,8 +171,43 @@
     });
   });
 
-</script>
+    var images = [
+        "/image/ad/ff.png",
+        "/image/ad/haru.jpg",
+        "/image/ad/ba.jpg",
+        "/image/ad/maple.jpg",
+        "/image/ad/seri.jpg"
 
+        // 추가 이미지 경로들...
+    ];
+
+    function getRandomImage() {
+        var randomIndex = Math.floor(Math.random() * images.length);
+        return images[randomIndex];
+    }
+
+    function changeAdImage() {
+        var adImage = document.getElementById("adImage");
+        adImage.src = getRandomImage();
+    }
+
+    // 페이지 로드 시 초기 이미지 설정
+    changeAdImage();
+
+    // 페이지 새로고침 시 이미지 변경
+    window.addEventListener("beforeunload", function() {
+        changeAdImage();
+    });
+
+    function closeAd() {
+      var adBanner = document.getElementsByClassName('ad')[0];
+      if (adBanner) {
+        adBanner.style.display = 'none';
+      }
+    }
+
+
+</script>
   </footer>
   </div>
 </th:block>

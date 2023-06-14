@@ -50,26 +50,27 @@ function BoardDetail({ csrfToken }) {
   };
 
   const purchasingReq = () => {
-    axios
-      .post('/api/purchasingReq', tradeBoard, {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
-        },
-      })
-      .then((response) => {
-        window.location.href = response.data;
-      })
-      .catch((error) => {
-           if (error.response && error.response.status === 400) {
-             alert(error.response.data);
-           } else {
-             // Other errors - Show generic error message in alert
-             console.log(error);
-             alert('An error occurred.');
-           }
-         });
-  };
+      axios
+        .post('/api/purchasingReq', tradeBoard, {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+          },
+        })
+        .then((response) => {
+          window.location.href = response.data;
+        })
+        .catch((error) => {
+             if (error.response && error.response.status === 400) {
+                      alert("이미 존재하는 구매 요청입니다.");
+                      window.location.href = error.response.data;
+             } else {
+               // Other errors - Show generic error message in alert
+               console.log(error);
+               alert('An error occurred.');
+             }
+           });
+    };
 
   return (
     <Container>

@@ -139,7 +139,7 @@
         <div class="space" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'}">
             <div class="info">
                 <div class="product-image">
-                    <img th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${trade.boardId.thumbnail}}" alt="Board Image" className="board-img" />
+                    <img th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${trade.boardId.thumbnail}}" alt="Board Image" className="board-img" th:trade_id="${trade.boardId.id}" />
                 </div>
                 <div class="product-info">
                     <h3 class="product-name" th:text="${trade.boardId.title}"></h3>
@@ -152,7 +152,7 @@
             </div>
         </div>
 
-        <div class="line" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'}"></div>
+        <div class="line" th:if="${trade.status == '거래완료'}"></div>
 
         <div class="space" th:if="${trade.status == '거래완료'}">
             <div class="review">
@@ -168,9 +168,9 @@
             </div>
         </div>
 
-        <div class="line" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중' || trade.status == '거래완료'}"></div>
+        <div class="line" th:if="${trade.status == '거래시작' || trade.status == '거래중' || trade.status == '거래완료'}"></div>
 
-        <div class="space">
+        <div class="space" th:if="${trade.status == '거래시작' || trade.status == '거래중' || trade.status == '거래완료'}">
             <div class="detail">
                 상세정보
             </div>
@@ -179,12 +179,12 @@
         <div class="line" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중' || trade.status == '거래완료'}"></div>
 
         <div class="form-row button-row" th:if="${trade.status == '대화요청' && role == 'buyer'}">
-            <button type="button">상세보기</button>
+            <a class="button" th:href="@{/boardDetail/{boardId}(boardId=${trade.boardId.id})}">상세보기</a>
         </div>
 
         <div class="form-row button-row" th:if="${trade.status == '대화요청' && role == 'seller'}">
             <button type="button">거래하기</button>
-            <button type="button">상세보기</button>
+            <a class="button" th:href="@{/boardDetail/{boardId}(boardId=${trade.boardId.id})}">상세보기</a>
         </div>
 
         <div class="form-row button-row" th:if="${trade.status == '거래시작' && role == 'buyer'}">
@@ -219,10 +219,11 @@
 
     </div>
 
-
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"
             integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+    <script>
 
+</script>
 </div>
 </body>
 </html>

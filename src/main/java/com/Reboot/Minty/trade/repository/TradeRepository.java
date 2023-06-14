@@ -19,7 +19,7 @@ public interface TradeRepository extends JpaRepository<Trade, Long> {
 
     Page<Trade> findAllByBuyerIdOrSellerId(User buyer, User seller, Pageable pageable);
 
-    int countByBoardIdAndBuyerIdAndSellerId(TradeBoard tradeBoard, User buyer,  User seller);
+    Trade findByBoardIdAndBuyerIdAndSellerId(TradeBoard tradeBoard, User buyer,  User seller);
 
     @Query("SELECT t FROM Trade t WHERE t.sellerId.id = :userId OR t.buyerId.id = :userId")
     List<Trade> getTradeList(@Param("userId") Long userId);

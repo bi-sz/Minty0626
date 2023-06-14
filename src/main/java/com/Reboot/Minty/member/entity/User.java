@@ -33,7 +33,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = false, name = "nickname")
+    @Column(nullable = false)
     private String nickName;
 
     @Column(nullable = false, name = "ageRange")
@@ -44,6 +44,8 @@ public class User {
 
     @Column(nullable = false, name = "gender")
     private String gender;
+
+
 
     // 레벨, 경험치, 잔액 추가
     @Column(nullable = false, name = "level")

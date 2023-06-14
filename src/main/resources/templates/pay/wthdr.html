@@ -52,98 +52,92 @@
 </div>
 
 <script>
-
-
   let amount = 0;
 
-       function totalMoney(){
-  var balance = $(".user-m").text(); // .val() 대신 .text()를 사용하여 값을 가져옵니다.
-  $("#amount").val(balance); // 가져온 값을 입력 창에 설정합니다.
-}
+  function totalMoney(){
+    var balance = $(".user-m").text()+"원";
+    $("#amount").val(balance)+"원";
+  }
 
 
-        function isNumberKey(evt) {
-            var charCode = (evt.which) ? evt.which : event.keyCode;
-            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-                return false;
-            }
-            return true;
-        }
+  function isNumberKey(evt) {
+    var charCode = (evt.which) ? evt.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      return false;
+    }
+    return true;
+  }
 
-        function updateAmount() {
-            var amountInput = document.getElementById('amount');
-            var withdrawButton = document.querySelector('#withdrawButton');
-            amount = parseInt(amountInput.value.replace(/,/g, '') || 0);
-            amountInput.value = numberWithCommas(amount) + "원";
-        }
+  function updateAmount() {
+    var amountInput = document.getElementById('amount');
+    var withdrawButton = document.querySelector('#withdrawButton');
+    amount = parseInt(amountInput.value.replace(/,/g, '') || 0);
+    amountInput.value = numberWithCommas(amount) + "원";
+  }
 
-        function addAmount(value) {
-            updateAmount();
-            amount += value;
-            document.getElementById('amount').value = numberWithCommas(amount) + "원";
+  function addAmount(value) {
+    updateAmount();
+    amount += value;
+    document.getElementById('amount').value = numberWithCommas(amount) + "원";
 
+    var userBalance = [[${user.balance}]];
+    userBalance = parseInt(userBalance);
+    var validateAmount = document.querySelector('.validateAmount');
+    if(userBalance < amount){
+      validateAmount.innerHTML = "보유 잔고보다 출금 금액이 많습니다.";
+      withdrawButton.disabled = true;
+    }else{
+      validateAmount.innerHTML = "";
+      withdrawButton.disabled = false;
+    }
+  }
 
-            var userBalance = [[${user.balance}]];
-            userBalance = parseInt(userBalance);
-            var validateAmount = document.querySelector('.validateAmount');
-             if(userBalance < amount){
-              validateAmount.innerHTML = "보유 잔고보다 출금 금액이 많습니다.";
-              withdrawButton.disabled = true;
-            }else{
-              validateAmount.innerHTML = "";
-              withdrawButton.disabled = false;
-            }
-        }
+  function resetAmount(value) {
+    updateAmount();
+    amount = value;
+    document.getElementById('amount').value = numberWithCommas(amount) + "원";
+  }
 
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 
-        function resetAmount(value) {
-            updateAmount();
-            amount = value;
-            document.getElementById('amount').value = numberWithCommas(amount) + "원";
-        }
+  updateAmount(); // 초기화
 
-        function numberWithCommas(x) {
-            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
+  $(document).ready(function() {
+    function withdrawBalance() {
+      var amountInput = document.getElementById('amount');
+      var amount = parseInt(amountInput.value.replace(/,/g, '') || 0);
 
-        updateAmount(); // 초기화
+      var token = $("meta[name='_csrf']").attr("content");
+      var header = $("meta[name='_csrf_header']").attr("content");
 
-        $(document).ready(function() {
-          function withdrawBalance() {
-            var amountInput = document.getElementById('amount');
-            var amount = parseInt(amountInput.value.replace(/,/g, '') || 0);
+      console.log(amount);
 
-            var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-
-            console.log(amount);
-
-            fetch('/withdraw?amount=' + amount, {
-              method: 'POST',
-              headers: {
-              'Content-Type': 'application/json',
-              [header]: token
-            },
-            body: JSON.stringify({ amount: amount })
-          })
-          .then(function(response) {
+      fetch('/withdraw?amount=' + amount, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          [header]: token
+        },
+        body: JSON.stringify({ amount: amount })
+      })
+      .then(function(response) {
         // 응답 처리 로직 추가
 
         // 출금이 완료되면 팝업을 닫음
-      alert('출금이 완료되었습니다.');
-      window.close();
+        alert('출금이 완료되었습니다.');
+        window.close();
+      })
+      .catch(function(error) {
+      // 오류 처리 로직 추가
+      });
+    }
 
-    })
-    .catch(function(error) {
-        // 오류 처리 로직 추가
-    });
-  }
-
-  // 버튼 클릭 이벤트에 withdrawBalance 함수 연결
-  var withdrawButton = document.getElementById('withdrawButton');
-  withdrawButton.addEventListener('click', withdrawBalance);
-
-});
+    // 버튼 클릭 이벤트에 withdrawBalance 함수 연결
+    var withdrawButton = document.getElementById('withdrawButton');
+    withdrawButton.addEventListener('click', withdrawBalance);
+  });
 </script>
 
 </body>

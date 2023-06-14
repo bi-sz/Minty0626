@@ -34,11 +34,11 @@ public class UserShopController {
         User user = userService.getUserInfo(userEmail);
         Long userId = user.getId();
 
-        List<Review> myReviews = reviewService.getReviewsByBuyerId(userId);
+        List<Review> receivedReviews = reviewService.getReceivedReviews(userId);
 
         if (user != null) {
             model.addAttribute("user", user);
-            model.addAttribute("myReviews", myReviews);
+            model.addAttribute("receivedReviews", receivedReviews);
         }else {
             model.addAttribute("errorMessage", "회원 정보를 찾을 수 없습니다.");
         }

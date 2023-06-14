@@ -7,6 +7,8 @@ import com.Reboot.Minty.event.service.AttendanceService;
 import com.Reboot.Minty.member.entity.User;
 import com.Reboot.Minty.member.repository.UserRepository;
 import com.Reboot.Minty.member.service.UserService;
+import com.Reboot.Minty.review.entity.Review;
+import com.Reboot.Minty.review.service.ReviewService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -23,12 +26,14 @@ public class MyPageController {
     private  final AttendanceService attendanceService;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final ReviewService reviewService;
 
     @Autowired
-    public MyPageController(AttendanceService attendanceService, UserRepository userRepository, UserService userService) {
+    public MyPageController(AttendanceService attendanceService, UserRepository userRepository, UserService userService, ReviewService reviewService) {
         this.attendanceService = attendanceService;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.reviewService = reviewService;
     }
 
     @GetMapping("mypage")
@@ -41,6 +46,8 @@ public class MyPageController {
         } else {
             model.addAttribute("errorMessage", "회원 정보를 찾을 수 없습니다.");
         }
+        List<Review> myReviews = reviewService.getReviewsByUserId(userId);
+        model.addAttribute("myReviews", myReviews);
 
         return "member/myPage";
     }

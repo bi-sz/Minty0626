@@ -95,4 +95,7 @@ public class TradeService {
         }
         return users;
     }
+    public Trade getTradeById(Long tradeId) {
+        return tradeRepository.findById(tradeId).orElse(null);
+    }
 }

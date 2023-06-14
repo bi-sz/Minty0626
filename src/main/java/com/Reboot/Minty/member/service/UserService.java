@@ -2,11 +2,16 @@ package com.Reboot.Minty.member.service;
 
 import com.Reboot.Minty.manager.entity.ManagerStatistics;
 import com.Reboot.Minty.manager.repository.ManagerStatisticsRepository;
+import com.Reboot.Minty.member.constant.Role;
 import com.Reboot.Minty.member.entity.User;
 import com.Reboot.Minty.member.entity.UserLocation;
 import com.Reboot.Minty.member.repository.UserLocationRepository;
 import com.Reboot.Minty.member.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -99,6 +104,10 @@ public class UserService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(email);
         }
+        // 사용자의 권한이 "BAN"인 경우 로그인 차단
+        if (user.getRole() == Role.BAN) {
+            throw new IllegalStateException("이용제한된 사용자입니다.");
+        }
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
@@ -134,9 +143,22 @@ public class UserService implements UserDetailsService {
 
 
     // 모든 사용자 조회
-    @Transactional(readOnly = true)
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<User> getAllUsersByRole(Role role) {
+        return userRepository.findByRole(role);
+    }
+
+    @Transactional
+    public void updateUserRole(Long id, Role role) {
+        User user = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+        user.setRole(role);
+        userRepository.save(user);
+    }
+
+    public Page<User> getPostList(Pageable pageable) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        return userRepository.findAll(pageable);
     }
 
     @Transactional

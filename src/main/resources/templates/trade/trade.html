@@ -102,7 +102,7 @@
 <div layout:fragment="content">
 
     <div class="wrapper">
-        <div class="space" th:if="${trade.status == '대화요청'}">
+        <div class="space" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'|| trade.status == '거래완료'}">
             <div class="notification">
                 <span th:text="'[' + (${role} == 'buyer' ? ${seller.nickName} : ${buyer.nickName}) + ']'"></span>
                 <span th:if="${trade.status == '대화요청'}" th:text="'님과 [' + ${trade.boardId.title} + '] 에 대한 대화를 시작해보세요.'"></span>
@@ -112,9 +112,9 @@
             </div>
         </div>
 
-        <div class="line" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'}"></div>
+        <div class="line" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'|| trade.status == '거래완료'}"></div>
 
-        <div class="space" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'}">
+        <div class="space" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'|| trade.status == '거래완료'}">
             <div class="status">
                 <div class="status-text">
                     <span th:if="${trade.status == '거래시작'}">거래시작</span>
@@ -134,9 +134,9 @@
             </div>
         </div>
 
-        <div class="line" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'}"></div>
+        <div class="line" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'|| trade.status == '거래완료'}"></div>
 
-        <div class="space" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'}">
+        <div class="space" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'|| trade.status == '거래완료'}">
             <div class="info">
                 <div class="product-image">
                     <img th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${trade.boardId.thumbnail}}" alt="Board Image" className="board-img" th:trade_id="${trade.boardId.id}" />
@@ -157,12 +157,17 @@
         <div class="space" th:if="${trade.status == '거래완료'}">
             <div class="review">
                 <div class="review-section">
-                    <div th:if="${reviewDto.reviewId == null}">
+                    <div th:if="${!isExistReview}">
                         <p>거래 후기를 남겨주세요.</p>
                     </div>
-                    <div th:if="${reviewDto.reviewId != null}">
-                        <p th:text="${reviewDto.content}"></p>
-                        <img th:src="${reviewDto.imageUrl}" alt="Review Image">
+
+                    <div th:if="${isExistReview}">
+                        <div>거래후기</div>
+                        <div>
+                            리뷰 내용
+                        </div>
+<!--                        <p th:text="${reviewDto.content}"></p>-->
+<!--                        <img th:src="${reviewDto.imageUrl}" alt="Review Image">-->
                     </div>
                 </div>
             </div>
@@ -188,7 +193,7 @@
         </div>
 
         <div class="form-row button-row" th:if="${trade.status == '거래시작' && role == 'buyer'}">
-            <button type="button">일정잡기</button>
+            <button type="button">거래예약</button>
             <button type="button">거래취소</button>
         </div>
 
@@ -198,7 +203,7 @@
         </div>
 
         <div class="form-row button-row" th:if="${trade.status == '거래중' && role == 'buyer'}">
-            <button type="button">거래변경</button>
+            <button type="button">거래예약</button>
             <button type="button">거래취소</button>
         </div>
 

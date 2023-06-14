@@ -2,44 +2,39 @@ package com.Reboot.Minty.trade.controller;
 
 import com.Reboot.Minty.member.entity.User;
 import com.Reboot.Minty.member.service.UserService;
+import com.Reboot.Minty.review.entity.Review;
+import com.Reboot.Minty.review.repository.ReviewRepository;
+import com.Reboot.Minty.review.service.ReviewService;
 import com.Reboot.Minty.trade.entity.Trade;
 import com.Reboot.Minty.trade.service.TradeService;
 import com.Reboot.Minty.tradeBoard.entity.TradeBoard;
 import com.Reboot.Minty.tradeBoard.service.TradeBoardService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class TradeController {
     private final TradeService tradeService;
-
     private final TradeBoardService tradeBoardService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
+    private final ReviewService reviewService;
 
     @Autowired
-    public TradeController(TradeService tradeService, TradeBoardService tradeBoardService) {
+    public TradeController(TradeService tradeService, TradeBoardService tradeBoardService, UserService userService, ReviewService reviewService) {
         this.tradeService = tradeService;
         this.tradeBoardService = tradeBoardService;
+        this.userService = userService;
+        this.reviewService = reviewService;
     }
 //
 //    @GetMapping("/{tradeId}")
@@ -95,15 +90,17 @@ public class TradeController {
     public String trade(@PathVariable(value = "tradeId") Long tradeId, Model model, HttpServletRequest request)  {
         HttpSession session = request.getSession();
         Long userId = (Long)session.getAttribute("userId");
+        User writerId = userService.getUserInfoById(userId);
         Trade trade = tradeService.getTradeDetail(tradeId);
         String role = tradeService.getRoleForTrade(tradeId, userId);
         User buyer= userService.getUserInfoById(trade.getBuyerId().getId());
         User seller= userService.getUserInfoById(trade.getSellerId().getId());
+        boolean isExistReview = reviewService.existsByIdAndWriterId(trade,writerId);
         model.addAttribute("trade", trade);
         model.addAttribute("role",role);
         model.addAttribute("buyer",buyer);
         model.addAttribute("seller",seller);
-
+        model.addAttribute("isExistReview",isExistReview);
         return "trade/trade";
     }
 

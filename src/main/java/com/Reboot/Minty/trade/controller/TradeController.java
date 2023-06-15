@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,7 +87,7 @@ public class TradeController {
         return "trade/tradeList";
     }
 
-    @GetMapping(value = "trade/{tradeId}")
+    @GetMapping(value = "/trade/{tradeId}")
     public String trade(@PathVariable(value = "tradeId") Long tradeId, Model model, HttpServletRequest request)  {
         HttpSession session = request.getSession();
         Long userId = (Long)session.getAttribute("userId");
@@ -101,6 +102,7 @@ public class TradeController {
         model.addAttribute("buyer",buyer);
         model.addAttribute("seller",seller);
         model.addAttribute("isExistReview",isExistReview);
+
         return "trade/trade";
     }
 
@@ -125,5 +127,34 @@ public class TradeController {
 
         return "/";
     }
+
+    @PostMapping("/updateStatus")
+    @Transactional
+    public String updateStatus(@RequestParam("tradeId") Long tradeId, @RequestParam("statusIndex") int statusIndex) {
+        try {
+            tradeService.updateStatus(tradeId, statusIndex);
+            // 현재 페이지를 리로드하는 JavaScript 코드를 반환
+            return "redirect:/trade/" + tradeId;
+        } catch (Exception e) {
+            e.printStackTrace(); // 에러 정보를 로그에 출력하거나 원하는 방식으로 처리할 수 있습니다.
+            // 오류 페이지로 리다이렉트하거나 오류 메시지를 표시하는 등의 처리를 수행합니다.
+            return "error";
+        }
+    }
+
+    @PostMapping("/updateMode")
+    @Transactional
+    public String updateMode(@RequestParam("tradeId") Long tradeId, @RequestParam("modeIndex") int modeIndex) {
+        try {
+            tradeService.updateMode(tradeId, modeIndex);
+            // 현재 페이지를 리로드하는 JavaScript 코드를 반환
+            return "redirect:/trade/" + tradeId;
+        } catch (Exception e) {
+            e.printStackTrace(); // 에러 정보를 로그에 출력하거나 원하는 방식으로 처리할 수 있습니다.
+            // 오류 페이지로 리다이렉트하거나 오류 메시지를 표시하는 등의 처리를 수행합니다.
+            return "error";
+        }
+    }
+
 
 }

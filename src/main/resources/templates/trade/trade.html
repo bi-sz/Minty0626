@@ -97,18 +97,20 @@
         cursor: pointer;
     }
 </style>
+
 </head>
 <body>
 <div layout:fragment="content">
 
     <div class="wrapper">
-        <div class="space" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'|| trade.status == '거래완료'}">
+        <div class="space" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중'|| trade.status == '거래완료' || trade.status == '거래취소'}">
             <div class="notification">
                 <span th:text="'[' + (${role} == 'buyer' ? ${seller.nickName} : ${buyer.nickName}) + ']'"></span>
                 <span th:if="${trade.status == '대화요청'}" th:text="'님과 [' + ${trade.boardId.title} + '] 에 대한 대화를 시작해보세요.'"></span>
                 <span th:if="${trade.status == '거래시작'}" th:text="'님과의 거래가 시작되었습니다.'"></span>
                 <span th:if="${trade.status == '거래중'}" th:text="'님과의 거래중입니다.'"></span>
                 <span th:if="${trade.status == '거래완료'}" th:text="'님과의 거래가 완료되었습니다.'"></span>
+                <span th:if="${trade.status == '거래취소'}" th:text="'님과의 거래가 취소되었습니다.'"></span>
             </div>
         </div>
 
@@ -166,8 +168,8 @@
                         <div>
                             리뷰 내용
                         </div>
-<!--                        <p th:text="${reviewDto.content}"></p>-->
-<!--                        <img th:src="${reviewDto.imageUrl}" alt="Review Image">-->
+                        <!--                        <p th:text="${reviewDto.content}"></p>-->
+                        <!--                        <img th:src="${reviewDto.imageUrl}" alt="Review Image">-->
                     </div>
                 </div>
             </div>
@@ -181,52 +183,72 @@
             </div>
         </div>
 
-        <div class="line" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중' || trade.status == '거래완료'}"></div>
+        <div class="line" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중' || trade.status == '거래완료' || trade.status == '거래취소'}"></div>
 
         <div class="form-row button-row" th:if="${trade.status == '대화요청' && role == 'buyer'}">
             <a class="button" th:href="@{/boardDetail/{boardId}(boardId=${trade.boardId.id})}">상세보기</a>
         </div>
 
         <div class="form-row button-row" th:if="${trade.status == '대화요청' && role == 'seller'}">
-            <button type="button">거래하기</button>
+            <form th:action="@{'/updateStatus'}" method="post">
+                <input type="hidden" name="tradeId" th:value="${trade.id}" />
+                <input type="hidden" name="statusIndex" value="1" />
+                <button type="submit">거래하기</button>
+            </form>
             <a class="button" th:href="@{/boardDetail/{boardId}(boardId=${trade.boardId.id})}">상세보기</a>
         </div>
 
-        <div class="form-row button-row" th:if="${trade.status == '거래시작' && role == 'buyer'}">
+        <div class="form-row button-row" th:if="${trade.status == '거래시작' || trade.status == '거래중'}">
             <button type="button">거래예약</button>
-            <button type="button">거래취소</button>
-        </div>
-
-        <div class="form-row button-row" th:if="${trade.status == '거래시작' && role == 'seller'}">
-            <button type="button">거래예약</button>
-            <button type="button">거래취소</button>
-        </div>
-
-        <div class="form-row button-row" th:if="${trade.status == '거래중' && role == 'buyer'}">
-            <button type="button">거래변경</button>
-            <button type="button">거래취소</button>
-        </div>
-
-        <div class="form-row button-row" th:if="${trade.status == '거래중' && role == 'seller'}">
-            <button type="button">거래변경</button>
-            <button type="button">거래취소</button>
+            <form th:action="@{'/updateStatus'}" method="post">
+                <input type="hidden" name="tradeId" th:value="${trade.id}" />
+                <input type="hidden" name="statusIndex" th:value="4" />
+                <button type="submit">거래취소</button>
+            </form>
         </div>
 
         <div class="form-row button-row" th:if="${trade.status == '거래완료'}">
-            <button type="button">후기작성</button>
+            <a th:href="@{/review/{tradeId}(tradeId=${trade.id})}"><button type="button">후기작성</button></a>
         </div>
 
-        <div class="form-row button-row" th:if="${trade.status == '거래완료' && role == 'buyer'}">
-            <form th:action="@{'/trade/' + ${trade.id} + '/review/create'}" method="post">
-                <button type="submit">후기 작성</button>
+        <div class="form-row button-row" th:if="${trade.status == '거래취소'}">
+            <form th:action="@{'/updateStatus'}" method="post">
+                <input type="hidden" name="tradeId" th:value="${trade.id}" />
+                <input type="hidden" name="statusIndex" value="0" />
+                <button type="submit">다시 거래하기</button>
             </form>
         </div>
+
+        <div class="form-row button-row" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중' || trade.status == '거래완료' || trade.status == '거래취소'}">
+            <form th:action="@{'/updateStatus'}" method="post">
+                <input type="hidden" name="tradeId" th:value="${trade.id}" />
+                <input type="hidden" name="statusIndex" value="3" />
+                <button type="submit">거래완료(임시)</button>
+            </form>
+        </div>
+
+        <div class="form-row button-row" th:if="${trade.status == '대화요청' || trade.status == '거래시작' || trade.status == '거래중' || trade.status == '거래완료' || trade.status == '거래취소'}">
+            <form th:action="@{'/updateStatus'}" method="post">
+                <input type="hidden" name="tradeId" th:value="${trade.id}" />
+                <input type="hidden" name="statusIndex" value="0" />
+                <button type="submit">거래초기화(임시)</button>
+            </form>
+        </div>
+
 
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"
             integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
     <script>
+        // URL 매개변수에서 reload 값 확인
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldReload = urlParams.get('reload');
+
+    // reload 값이 true인 경우 페이지 리로드
+    if (shouldReload === 'true') {
+        location.reload();
+    }
 
 </script>
 </div>

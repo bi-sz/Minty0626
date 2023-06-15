@@ -172,7 +172,7 @@
 
     .charge {
         width: 180px;
-        height: 95px;
+        height:74px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -208,6 +208,16 @@
         window.open(/*[[@{/wthdr}]]*/, '_blank', 'width=' + popupWidth + ', height=' + popupHeight + ', left=' + leftPosition + ', top=' + topPosition);
     }
 
+     //개인정보수정칸
+      function edit() {
+        var popupWidth = 900;
+        var popupHeight = 800;
+        var leftPosition = (window.screen.width - popupWidth) / 2;
+        var topPosition = (window.screen.height - popupHeight) / 2;
+
+        window.open(/*[[@{/edit}]]*/, '_blank', 'width=' + popupWidth + ', height=' + popupHeight + ', left=' + leftPosition + ', top=' + topPosition);
+    }
+
 
       $(document).ready(function() {
         $(".charge").on("mouseover", function() {
@@ -219,81 +229,6 @@
             $(this).css("background-color", "white");
         });
     });
-
-   $(document).ready(function() {
-                var token = $("meta[name='_csrf']").attr("content");
-                var header = $("meta[name='_csrf_header']").attr("content");
-                var today = moment().format('YYYY-MM-DD');
-
-                $('#calendar').fullCalendar({
-                    header: {
-                        left: '',
-                        center: 'title',
-                        right: ''
-                    },
-                    dayRender: function(date, cell) {
-                        var image = $('<img>', {
-                            class: 'attendance-image',
-                            src: '../image/myPage/check_x.png',
-                            click: function() {
-                                var clickedDate = moment(date).format('YYYY-MM-DD');
-
-                                if (clickedDate === 'favicon.ico') {
-                                    return;
-                                }
-
-                                if (clickedDate === today) {
-                                    var $image = $(this);
-
-                                    $.ajax({
-                                        type: 'POST',
-                                        url: 'attendance/save',
-                                        contentType: 'application/json',
-                                        data: JSON.stringify({ date: clickedDate }),
-                                        success: function(response) {
-                                            $image.attr('src', '../image/myPage/check2.png');
-                                            // Update points display
-                                            updatePoints(response.points);
-                                        },
-                                        beforeSend: function(xhr) {
-                                            xhr.setRequestHeader(header, token);
-                                        },
-                                        error: function(error) {
-                                            console.log(error);
-                                        }
-                                    });
-                                } else {
-                                    console.log("출석체크는 당일만 가능합니다.");
-                                }
-                            }
-                        });
-
-                        var clickedDate = moment(date).format('YYYY-MM-DD');
-                        $.ajax({
-                            type: 'GET',
-                            url: 'attendance/checkStatus/' + clickedDate,
-                            success: function(response) {
-                                if (response) {
-                                    image.attr('src', '../image/myPage/check2.png');
-                                }
-                            },
-                            beforeSend: function(xhr) {
-                                xhr.setRequestHeader(header, token);
-                            },
-                            error: function(error) {
-                                console.log(error);
-                            }
-                        });
-
-                        $(cell).append(image);
-                    }
-                });
-
-                function updatePoints(points) {
-                    // Update the points display element with the new points value
-                    $('#points-display').text(points);
-                }
-            });
 
 </script>
 
@@ -357,6 +292,10 @@
                         <div class="charge" onclick="openNewWindow2()">
                             <img src="/image/myPage/charge_out.png" width="30px;" height="30px;" alt="출금아이콘">
                             <span>출금하기</span>
+                        </div>
+                        <div class="charge" onclick="edit()">
+                            <img src="/image/myPage/charge_out.png" width="30px;" height="30px;" alt="개인정보수정">
+                            <span>개인정보수정</span>
                         </div>
                     </div>
                 </div>

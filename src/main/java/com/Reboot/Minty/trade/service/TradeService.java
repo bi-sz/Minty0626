@@ -98,4 +98,32 @@ public class TradeService {
     public Trade getTradeById(Long tradeId) {
         return tradeRepository.findById(tradeId).orElse(null);
     }
+
+    public void updateStatus(Long tradeId, int statusIndex) {
+        String[] statuses = {"대화요청", "거래시작", "거래중", "거래완료", "거래취소"};
+
+        if (statusIndex >= 0 && statusIndex < statuses.length) {
+            String newStatus = statuses[statusIndex];
+
+            tradeRepository.updateStatusById(tradeId, newStatus);
+
+            System.out.println("Trade " + tradeId + "의 상태가 " + newStatus + "로 변경되었습니다.");
+        } else {
+            System.out.println("Invalid status index.");
+        }
+    }
+
+    public void updateMode(Long tradeId, int modeIndex) {
+        String[] modes = {"직거래", "안전거래"};
+
+        if (modeIndex >= 0 && modeIndex < modes.length) {
+            String newMode = modes[modeIndex];
+
+            tradeRepository.updateModeById(tradeId, newMode);
+
+            System.out.println("Trade " + tradeId + "의 모드가 " + newMode + "로 변경되었습니다.");
+        } else {
+            System.out.println("Invalid status index.");
+        }
+    }
 }

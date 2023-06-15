@@ -44,13 +44,14 @@ public class GlobalDataInterceptor implements HandlerInterceptor {
                     e.printStackTrace();
                 }
             }
-            if (!approvedImages.isEmpty()) {
-                int randomIndex = (int) (Math.random() * approvedImages.size());
+            if (!approvedAds.isEmpty() && !approvedImages.isEmpty()) {
+                int randomIndex = random.nextInt(approvedImages.size());
                 Ad ad = approvedImages.get(randomIndex);
                 modelAndView.addObject("advertise", ad);
-
-                String imagePath = "adimage/";
             }
-        }
+        } else {
+            modelAndView = new ModelAndView(); // modelAndView가 null인 경우 새로운 객체 생성
+            modelAndView.addObject("advertise", null);        }
     }
+
 }

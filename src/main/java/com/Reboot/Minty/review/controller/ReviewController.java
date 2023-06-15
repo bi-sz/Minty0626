@@ -6,9 +6,12 @@ import com.Reboot.Minty.review.dto.ReviewDto;
 import com.Reboot.Minty.review.entity.Review;
 import com.Reboot.Minty.review.service.ReviewService;
 import com.Reboot.Minty.trade.entity.Trade;
+import com.Reboot.Minty.trade.repository.TradeRepository;
 import com.Reboot.Minty.trade.service.TradeService;
+import jakarta.persistence.EntityExistsException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,29 +29,37 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final UserService userService;
     private final TradeService tradeService;
-
+    private final TradeRepository tradeRepository;
     @Autowired
-    public ReviewController(ReviewService reviewService, UserService userService, TradeService tradeService) {
+    public ReviewController(ReviewService reviewService, UserService userService, TradeService tradeService, TradeRepository tradeRepository) {
         this.reviewService = reviewService;
         this.userService = userService;
         this.tradeService = tradeService;
+        this.tradeRepository = tradeRepository;
     }
 
     // 리뷰 작성 폼을 보여줌
-    @GetMapping("/review")
-    public String showReviewForm(ReviewDto reviewDto, HttpServletRequest request, Model model) {
+    @GetMapping("/review/{tradeId}")
+    public String showReviewForm(@PathVariable("tradeId") Long tradeId, ReviewDto reviewDto, HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
         String userEmail = (String) session.getAttribute("userEmail");
+        Long userId = (Long)session.getAttribute("userId");
+        Trade trade = tradeRepository.findById(tradeId).orElseThrow(EntityExistsException::new);
         User user = userService.getUserInfo(userEmail);
+
         reviewDto.setNickname(user.getNickName());
         reviewDto.setId(user.getId());
+        reviewDto.setTrade(trade);
 
+        model.addAttribute("trade", trade);
         model.addAttribute("reviewDto", reviewDto);
+
         return "review/review-form";
     }
 
     // 리뷰를 생성함
     @PostMapping("/")
+    @Transactional
     public String createReview(@ModelAttribute("reviewDto") @Valid ReviewDto reviewDto, BindingResult bindingResult, Principal principal, HttpServletRequest request, Model model) {
         HttpSession session = request.getSession();
         String userEmail = (String) session.getAttribute("userEmail");
@@ -56,40 +67,29 @@ public class ReviewController {
         reviewDto.setNickname(user.getNickName());
 
         if (bindingResult.hasErrors()) {
-            // 유효성 검사 실패 시 처리 로직
-            return "redirect/";
+            // 유효성 검사 실패 시 처리 로직을 작성하세요.
+            model.addAttribute("reviewDto", reviewDto); // 입력된 데이터를 유지하기 위해 reviewDto를 다시 모델에 추가합니다.
+            return "error"; // 예: 유효성 검사 실패 시 에러 페이지로 이동하도록 "error"로 변경합니다.
         }
 
         MultipartFile imageFile = reviewDto.getImageFile();
         if (imageFile != null && !imageFile.isEmpty()) {
             String originalFilename = imageFile.getOriginalFilename();
-            // 파일을 저장하는 로직을 구현해야 합니다. (예: Amazon S3, 로컬 디렉토리 등)
-            // reviewDto.setImageFile(저장된 파일 경로 또는 파일명);
+            // 파일 저장 로직을 여기에 구현하세요. (예: Amazon S3, 로컬 디렉토리 등)
+            // reviewDto.setImageUrl(저장된 파일 경로 또는 파일명);
         }
 
-        Long userId = user.getId();
-        Long tradeId = reviewDto.getTradeBoard().getId();
-        Trade trade = tradeService.getTradeById(tradeId);
+        Trade trade = tradeRepository.findById(reviewDto.getTrade().getId()).orElseThrow(() -> new IllegalArgumentException("Trade not found"));
 
-        if (trade == null || (trade.getSellerId().getId() != userId && trade.getBuyerId().getId() != userId)) {
-            // trade가 존재하지 않거나 현재 사용자가 해당 거래의 판매자 또는 구매자가 아닌 경우
-            // 처리할 로직을 작성하세요.
-            return "error";
-        }
-
-        if (trade.getSellerId().getId().equals(userId)) {
-            reviewDto.setSellerId(trade.getSellerId());
-            reviewDto.setBuyerId(trade.getBuyerId());
-        } else if (trade.getBuyerId().getId().equals(userId)) {
-            reviewDto.setSellerId(trade.getSellerId());
-            reviewDto.setBuyerId(trade.getBuyerId());
-        }
+        reviewDto.setTrade(trade); // Trade 객체를 ReviewDto에 설정
 
         reviewService.createReview(reviewDto);
         userService.increaseExp(userEmail, 10);
 
         return "redirect:/";
     }
+
+
 
     // 특정 ID에 해당하는 리뷰를 삭제함
     @PostMapping("/reviews/{id}/delete")

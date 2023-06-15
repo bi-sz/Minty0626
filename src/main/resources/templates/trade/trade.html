@@ -198,12 +198,12 @@
         </div>
 
         <div class="form-row button-row" th:if="${trade.status == '거래시작' && role == 'seller'}">
-            <button type="button">일정잡기</button>
+            <button type="button">거래예약</button>
             <button type="button">거래취소</button>
         </div>
 
         <div class="form-row button-row" th:if="${trade.status == '거래중' && role == 'buyer'}">
-            <button type="button">거래예약</button>
+            <button type="button">거래변경</button>
             <button type="button">거래취소</button>
         </div>
 

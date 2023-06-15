@@ -199,7 +199,7 @@
         </div>
 
         <div class="form-row button-row" th:if="${trade.status == '거래시작' || trade.status == '거래중'}">
-            <button type="button">거래예약</button>
+            <a class="button" th:href="@{/schedule/{tradeId}(tradeId=${trade.id})}">거래예약</a>
             <form th:action="@{'/updateStatus'}" method="post">
                 <input type="hidden" name="tradeId" th:value="${trade.id}" />
                 <input type="hidden" name="statusIndex" th:value="4" />

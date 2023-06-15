@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="kr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <title>Weather Information</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css">
@@ -16,60 +18,107 @@
         flex-basis: 30%;
         text-align: center;
       }
-              #calendar {
-            max-width: 600px;
-            margin: 0 auto;
-        }
 
-        #weather-info {
-            position: absolute;
-            top: 65%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-
-       .container {
-          display: flex;
+      #calendar {
+        max-width: 600px;
+        margin: 0 auto;
       }
 
-        .fc-past {
-            pointer-events: none;
-            background-color: hsl(0, 0%, 90%);
-        }
-        .fc-today {
-            background-color: #a3c3ff;
-        }
-        .fc-selected {
-            background-color: hsl(120, 70%, 90%);
-        }
-        .weather-icon {
-            font-size: 48px;
-            margin: 10px auto;
-            display: block;
-        }
-        .weather-info-text {
-            margin-bottom: 10px;
-        }
-        .button-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
+      #weather-info {
+        position: absolute;
+        top: 65%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+
+      .container {
+        display: flex;
+        justify-content: center;
+      }
+
+      .container .section {
+        margin-right: 20px;
+      }
+
+      .fc-past {
+        pointer-events: none;
+        background-color: hsl(0, 0%, 90%);
+      }
+
+      .fc-today {
+        background-color: #a3c3ff;
+      }
+
+      .fc-selected {
+        background-color: hsl(120, 70%, 90%);
+      }
+
+      .weather-icon {
+        font-size: 48px;
+        margin: 10px auto;
+        display: block;
+      }
+
+      .weather-info-text {
+        margin-bottom: 10px;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      /* 알림 메시지 스타일 */
+      .notification {
+        background-color: #f8f8f8;
+        padding: 10px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 18px;
+      }
+
+      /* 섹션 스타일 */
+      .section {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      /* 버튼 컨테이너 스타일 */
+      .button-container {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      .button-container button {
+        margin-right: 10px;
+      }
     </style>
 </head>
 <body>
-<h1>일정 예약</h1>
+<!-- 알림 메시지 -->
+<div class="notification">
+    <span th:text="'[' + (${role} == 'buyer' ? ${seller.nickName} : ${buyer.nickName}) + ']'"></span>
+    <span th:text="'님과 [' + ${trade.boardId.title} + '] 에 대한 거래 일정 잡기.'"></span>
+</div>
 
+<!-- 거래 가능 시간 섹션 -->
 <div class="container">
     <div class="section">
         <h2>거래 가능 시간</h2>
-        <!-- 거래 가능 시간 내용 추가 -->
+        <!-- 여기에 거래 가능 시간 내용 추가 -->
     </div>
 
+    <!-- 캘린더 섹션 -->
     <div class="section">
         <h2>캘린더</h2>
+        <!-- 여기에 캘린더 요소 추가 -->
         <div id="calendar"></div>
+        <!-- 여기에 날씨 정보 출력 영역 추가 -->
         <div class="weather-info">
             <h3><i class="far fa-calendar-alt"></i> 선택된 날짜의 날씨 정보</h3>
             <p class="weather-info-text" id="selected-date"></p>
@@ -82,33 +131,22 @@
                 <button>확인</button>
                 <button>취소</button>
             </div>
-        </div>  </div>
+        </div>
+    </div>
 
-    <div class="section">
+    <!-- 시간 선택 섹션 -->
+    <div class="section" id="time-selection-section" style="display: none;">
         <h2>시간 선택</h2>
         <div id="selected-date-display"></div>
         <select id="selected-time">
             <option value="7">07:00</option>
             <option value="8">08:00</option>
             <option value="9">09:00</option>
-            <option value="10">10:00</option>
-            <option value="11">11:00</option>
-            <option value="12">12:00</option>
-            <option value="13">13:00</option>
-            <option value="14">14:00</option>
-            <option value="15">15:00</option>
-            <option value="16">16:00</option>
-            <option value="17">17:00</option>
-            <option value="18">18:00</option>
-            <option value="19">19:00</option>
-            <option value="20">20:00</option>
-            <option value="21">21:00</option>
-            <option value="22">22:00</option>
-            <option value="23">23:00</option>
-            <option value="24">24:00</option>
+            <!-- 여기에 다른 시간 옵션 추가 -->
         </select>
     </div>
 </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
@@ -129,6 +167,7 @@
                 selectedDate = moment(date).format('YYYY-MM-DD'); // 선택된 날짜 저장
 
                 updateWeatherInfo();
+                showTimeSelectionSection();
             },
             dayRender: function(date, cell) {
                 if (moment(date).isBefore(moment(), 'day')) {
@@ -236,22 +275,17 @@
         updateWeatherInfo(); // 페이지 로드 시 초기화
     });
 
-    $('#calendar').on('click', '.fc-day', function() {
-        var selectedDate = $(this).data('date');
-        $('#selected-date-display').text('거 래희 망날 짜: ' + selectedDate);
-    });
+    function showTimeSelectionSection() {
+        $('#time-selection-section').show();
+    }
 
     function getSelectedTime() {
-    var selectedTime = $('#selected-time').val();
-    return selectedTime;
-}
-$('.button-container button:first-child').click(function() {
-    var selectedDate = $('#selected-date').text();
-    var selectedTime = getSelectedTime();
-    console.log('선택된 날짜:', selectedDate);
-    console.log('선택된 시간:', selectedTime + '시');
-});
-
+        var selectedTime = $('#selected-time').val();
+        if (selectedTime) {
+            return selectedTime + ':00';
+        }
+        return null;
+    }
 </script>
 </body>
 </html>

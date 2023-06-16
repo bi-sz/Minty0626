@@ -37,43 +37,6 @@ public class TradeController {
         this.userService = userService;
         this.reviewService = reviewService;
     }
-//
-//    @GetMapping("/{tradeId}")
-//    public String getTradeDetail(@PathVariable Long tradeId, HttpSession session, Model model) {
-//        TradeDto tradeDto = tradeService.getTradeDetail(tradeId);
-//        Long userId = (Long) session.getAttribute("userId");
-//        String role = tradeService.getRoleForTrade(tradeId, userId);
-//        model.addAttribute("tradeDto", tradeDto);
-//        model.addAttribute("role", role);
-//        return "trade/detail";
-//    }
-//
-//    @GetMapping("/{tradeId}/review")
-//    public String getReviewDetail(@PathVariable Long tradeId, HttpSession session, Model model) {
-//        ReviewDto reviewDto = tradeService.getReviewDetail(tradeId);
-//        Long userId = (Long) session.getAttribute("userId");
-//        String role = tradeService.getRoleForTrade(tradeId, userId);
-//        model.addAttribute("reviewDto", reviewDto);
-//        model.addAttribute("role", role);
-//        return "trade/review";
-//    }
-//
-//    @GetMapping("/{tradeId}/review/create")
-//    public String showReviewForm(@PathVariable Long tradeId, HttpSession session, Model model) {
-//        TradeDto tradeDto = tradeService.getTradeDetail(tradeId);
-//        Long userId = (Long) session.getAttribute("userId");
-//        String role = tradeService.getRoleForTrade(tradeId, userId);
-//        model.addAttribute("tradeDto", tradeDto);
-//        model.addAttribute("role", role);
-//        model.addAttribute("reviewDto", new ReviewDto());
-//        return "trade/review-form";
-//    }
-
-//    @PostMapping("/{tradeId}/review/create")
-//    public String submitReviewForm(@PathVariable Long tradeId, @ModelAttribute("reviewDto") ReviewDto reviewDto) {
-//        // 후기 작성 처리 로직
-//        return "redirect:/trade/" + tradeId;
-//    }
 
     @GetMapping("/tradeList")
     public String tradeList(Model model, HttpServletRequest request) {

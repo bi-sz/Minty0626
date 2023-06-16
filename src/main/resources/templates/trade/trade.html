@@ -165,11 +165,39 @@
 
                     <div th:if="${isExistReview}">
                         <div>거래후기</div>
-                        <div>
-                            리뷰 내용
+
+                        <div class="reviewDetail">
+                            <img class="review_rating" th:if="${review.rating != null}">
+                            <th:block th:switch="${review.rating}">
+                                <img th:case="1" th:src="@{/image/review/reviewPage/star1.png}"
+                                     style="width: 70px; height: 70px; position: absolute; top: 10px; left: 10px;"/>
+                                <img th:case="2" th:src="@{/image/review/reviewPage/star2.png}"
+                                     style="width: 70px; height: 70px; position: absolute; top: 10px; left: 10px;"/>
+                                <img th:case="3" th:src="@{/image/review/reviewPage/star3.png}"
+                                     style="width: 70px; height: 70px; position: absolute; top: 10px; left: 10px;"/>
+                                <img th:case="4" th:src="@{/image/review/reviewPage/star4.png}"
+                                     style="width: 70px; height: 70px; position: absolute; top: 10px; left: 10px;"/>
+                                <img th:case="*" th:src="@{/image/review/reviewPage/star5.png}"
+                                     style="width: 70px; height: 70px; position: absolute; top: 10px; left: 10px;"/>
+                            </th:block>
+                            </img>
+                            <div class="review_content_container">
+                                <span class="review_content" th:text="${review.contents}" th:classappend="${review.imageUrl} ? '' : 'expand-width'"></span>
+                                <button class="more-button">더 보기</button>
+                            </div>
+                            <span class="review_createdAt" th:text="${T(com.Reboot.Minty.review.time.DateUtils).formatReviewDate(review.writeTime)}"></span>
+                            <div class="review_bottom">
+                                <span class="review_score" th:text="${review.rating}"></span>
+                                <span class="review_nickname" th:text="${review.nickname}"></span>
+                                <div class="product-view-container">
+                                    <form action="/product" method="post" enctype="multipart/form-data">
+                                        <p>대충 여기 어디 누르면 상품 뷰 페이지로 감 아직 연동안함</p>
+                                    </form>
+                                </div>
+                            </div>
+                            <img class="review_imageUrl" th:if="${review.imageUrl != null}" th:src="@{${review.imageUrl}}"
+                                 width="150" height="150" alt="Review Image"/>
                         </div>
-                        <!--                        <p th:text="${reviewDto.content}"></p>-->
-                        <!--                        <img th:src="${reviewDto.imageUrl}" alt="Review Image">-->
                     </div>
                 </div>
             </div>

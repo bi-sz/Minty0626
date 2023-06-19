@@ -112,8 +112,42 @@
         <span th:text="'님과 [' + ${trade.boardId.title} + '] 에 대한 거래 일정 잡기.'"></span>
     </div>
 
+
     <!-- 거래 가능 시간 섹션 -->
-    <div class="container">
+    <div class="section">
+        <span th:text="'[' + (${role} == 'buyer' ? ${seller.nickName} : ${buyer.nickName}) + '] 님의 거래 희망 시간'"></span>
+        <!-- 여기에 거래 가능 시간 내용 추가 -->
+
+        <div class="userSchedule">
+            <div style="cursor: pointer; margin-top: 15px;" class="ad-item">
+                <div class="image-preview">
+                    <img th:src="@{../image/aaaa.png}" alt="이미지" width="40" height="40" style="border-radius: 50%; margin-left: 10px;">
+                    <span th:text="${role} == 'buyer' ? ${seller.nickName} : ${buyer.nickName}" style="color: #999;"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 거래 희망 요일 -->
+        <div th:if="${role} == 'buyer'">
+            <div th:if="${!buyerCheckDay || !buyerSchedule.hasHopeDay()}">
+                <p>등록된 거래희망 요일 정보가 없습니다.</p>
+            </div>
+
+            <div th:if="${buyerCheckDay && buyerSchedule.hasHopeDay()}">
+                <div th:text="${buyerSchedule.getHopeDay()}"></div>
+            </div>
+        </div>
+
+        <div th:if="${role} == 'seller'">
+            <div th:if="${!sellerCheckDay || !sellerSchedule.hasHopeDay()}">
+                <p>등록된 거래희망 요일 정보가 없습니다.</p>
+            </div>
+
+            <div th:if="${sellerCheckDay && sellerSchedule.hasHopeDay()}">
+                <div th:text="${sellerSchedule.getHopeDay()}"></div>
+            </div>
+        </div>
+
         <!-- 거래 희망 시간 -->
         <div th:if="${role} == 'buyer'">
             <div th:if="${!buyerCheckDuration || !buyerSchedule.hasHopeDuration()}">

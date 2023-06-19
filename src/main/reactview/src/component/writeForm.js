@@ -1,12 +1,13 @@
 import { Form, Container, Row, Col } from 'react-bootstrap';
 import { useEffect, useState, useRef } from "react";
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import CommonForm from './commonForm';
 import TradeForm from './tradeForm';
 import JobForm from './jobForm';
 import '../css/writeForm.css';
 
-function WriteForm() {
+function WriteForm(props) {
     const [targetCategory, setTargetCategory] = useState('tradeBoard');
     const [subCategory, setSubCategory] = useState('sell');
     const [tradeTopCate, setTradeTopCate] = useState([]);
@@ -15,6 +16,21 @@ function WriteForm() {
     const [selectedSubCateId, setSelectedSubCateId] = useState(null);
     const [boardType, setBoardType] = useState(0);
     const [csrfToken, setCsrfToken] = useState('');
+    const [tradeBoard, setTradeBoard] = useState(null);
+    const [imageList, setImageList] = useState([]);
+
+       const location = useLocation();
+        const state = location.state;
+    useEffect(() => {
+        if (location.state) {
+               setTradeBoard(location.state.tradeBoard);
+              setSelectedTopCateId(location.state.tradeBoard.topCategory.id);
+                  setSelectedSubCateId(location.state.tradeBoard.subCategory.id);
+                  setImageList(location.state.imageList);
+
+        }
+    }, [location.state]);
+
 
 
     const fetchData = () => {
@@ -178,6 +194,8 @@ function WriteForm() {
                    selectedSubCateId={selectedSubCateId}
                     boardType={boardType}
                     csrfToken={csrfToken}
+                    tradeBoard={tradeBoard}
+                    imageList={imageList}
                  />
                )}
                 {(subCategory === "emergencyJob" && targetCategory === "tradeBoard") && <JobForm />}

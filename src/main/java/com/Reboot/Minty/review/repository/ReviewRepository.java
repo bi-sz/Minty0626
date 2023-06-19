@@ -20,6 +20,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         List<Review> getReceivedReviewsByReceiverIdOrderByWriteTimeDesc(User receiverId);
         List<Review> findByReceiverId(Long receiverId);
 
-        Optional<Review> findByTradeIdAndWriterId(Long tradeId, User writerId);
+        Optional<Review> findByTradeIdAndWriterId(Trade tradeId, User writerId);
 
 }

@@ -8,6 +8,8 @@ import com.Reboot.Minty.tradeBoard.service.TradeBoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -52,19 +54,17 @@ public class ScheduleController {
 
     @PostMapping("/updateTradeSchedule")
     @Transactional
-    public String updateTradeSchedule(@RequestParam("tradeId") Long tradeId, @RequestParam("tradeDate") LocalDate tradeDate, @RequestParam("tradeTime") LocalTime tradeTime) {
+    public ResponseEntity TradeSchedule(@RequestParam("tradeId") Long tradeId, @RequestParam("tradeDate") LocalDate tradeDate, @RequestParam("tradeTime") LocalTime tradeTime) {
         try {
-            System.out.println(tradeId);
-            System.out.println(tradeDate);
-            System.out.println(tradeTime);
             tradeService.updateTradeSchedule(tradeId, tradeDate, tradeTime);
+            tradeService.updateStatus(tradeId, 2);
 
             // 현재 페이지를 리로드하는 JavaScript 코드를 반환
-            return "redirect:/trade/" + tradeId;
+            return ResponseEntity.ok("/trade/" + tradeId);
         } catch (Exception e) {
             e.printStackTrace(); // 에러 정보를 로그에 출력하거나 원하는 방식으로 처리할 수 있습니다.
             // 오류 페이지로 리다이렉트하거나 오류 메시지를 표시하는 등의 처리를 수행합니다.
-            return "error";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("/schedule/"+tradeId);
         }
     }
 

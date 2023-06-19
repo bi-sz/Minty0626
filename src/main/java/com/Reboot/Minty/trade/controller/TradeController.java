@@ -2,6 +2,7 @@ package com.Reboot.Minty.trade.controller;
 
 import com.Reboot.Minty.member.entity.User;
 import com.Reboot.Minty.member.service.UserService;
+import com.Reboot.Minty.review.dto.ReviewDto;
 import com.Reboot.Minty.review.entity.Review;
 import com.Reboot.Minty.review.repository.ReviewRepository;
 import com.Reboot.Minty.review.service.ReviewService;
@@ -59,11 +60,13 @@ public class TradeController {
         String role = tradeService.getRoleForTrade(tradeId, userId);
         User buyer= userService.getUserInfoById(trade.getBuyerId().getId());
         User seller= userService.getUserInfoById(trade.getSellerId().getId());
+        Review review = reviewService.getReviewByTradeIdAndWriterId(trade,writerId);
         boolean isExistReview = reviewService.existsByIdAndWriterId(trade,writerId);
         model.addAttribute("trade", trade);
         model.addAttribute("role",role);
         model.addAttribute("buyer",buyer);
         model.addAttribute("seller",seller);
+        model.addAttribute("review",review);
         model.addAttribute("isExistReview",isExistReview);
 
         return "trade/trade";

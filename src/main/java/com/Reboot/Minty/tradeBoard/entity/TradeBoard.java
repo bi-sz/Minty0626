@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 @Setter
 @DynamicInsert
 public class TradeBoard {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -60,5 +61,8 @@ public class TradeBoard {
     @ManyToOne
     @JoinColumn(name="user_location")
     private UserLocation userLocation;
+
+    @Column(columnDefinition = "INT DEFAULT 0", nullable = false)
+    private int status;
 
 }

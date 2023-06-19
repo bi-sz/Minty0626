@@ -33,11 +33,14 @@ public class TradeBoardDto {
 
     private User user;
     private int boardType;
-
     private UserLocation userLocation;
 
     private static ModelMapper modelMapper =  new ModelMapper();
     public static TradeBoard toEntity(TradeBoardDto dto) {
         return modelMapper.map(dto, TradeBoard.class);
+    }
+
+    public void updateEntity(TradeBoard tradeBoard) {
+        modelMapper.map(this, tradeBoard);
     }
 }

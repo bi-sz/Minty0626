@@ -114,20 +114,69 @@
 
     <!-- 거래 가능 시간 섹션 -->
     <div class="container">
-        <div class="section">
-            <span th:text="'[' + (${role} == 'buyer' ? ${seller.nickName} : ${buyer.nickName}) + '] 님의 거래 희망 시간'"></span>
-            <!-- 여기에 거래 가능 시간 내용 추가 -->
-
-            <div class="userSchedule">
-                <div style="cursor: pointer; margin-top: 15px;" class="ad-item">
-                    <div class="image-preview">
-                        <img th:src="@{../image/aaaa.png}" alt="이미지" width="40" height="40" style="border-radius: 50%; margin-left: 10px;">
-                        <span th:text="${role} == 'buyer' ? ${buyer.nickName} : ${seller.nickName}" style="color: #999;"></span>
-                    </div>
-                </div>
+        <!-- 거래 희망 시간 -->
+        <div th:if="${role} == 'buyer'">
+            <div th:if="${!buyerCheckDuration || !buyerSchedule.hasHopeDuration()}">
+                <p>등록된 거래희망 시간 정보가 없습니다.</p>
             </div>
 
+            <div th:if="${buyerCheckDuration && buyerSchedule.hasHopeDuration()}">
+                <div th:text="${buyerSchedule.getHopeDuration()}"></div>
+            </div>
         </div>
+
+        <div th:if="${role} == 'seller'">
+            <div th:if="${!sellerCheckDuration || !sellerSchedule.hasHopeDuration()}">
+                <p>등록된 거래희망 시간 정보가 없습니다.</p>
+            </div>
+
+            <div th:if="${sellerCheckDuration && sellerSchedule.hasHopeDuration()}">
+                <div th:text="${sellerSchedule.getHopeDuration()}"></div>
+            </div>
+        </div>
+
+        <!-- 거래 희망 위치 -->
+        <div th:if="${role} == 'buyer'">
+            <div th:if="${!buyerCheckArea || !buyerSchedule.hasHopeArea()}">
+                <p>등록된 거래희망 위치 정보가 없습니다.</p>
+            </div>
+
+            <div th:if="${buyerCheckArea && buyerSchedule.hasHopeArea()}">
+                <div th:text="${buyerSchedule.getHopeArea()}"></div>
+            </div>
+        </div>
+
+        <div th:if="${role} == 'seller'">
+            <div th:if="${!sellerCheckArea || !sellerSchedule.hasHopeArea()}">
+                <p>등록된 거래희망 위치 정보가 없습니다.</p>
+            </div>
+
+            <div th:if="${sellerCheckArea && sellerSchedule.hasHopeArea()}">
+                <div th:text="${sellerSchedule.getHopeArea()}"></div>
+            </div>
+        </div>
+
+        <!-- 거래 희망 소개 -->
+        <div th:if="${role} == 'buyer'">
+            <div th:if="${!buyerCheckIntroduction || !buyerSchedule.hasIntroduction()}">
+                <p>등록된 거래희망 소개가 없습니다.</p>
+            </div>
+
+            <div th:if="${buyerCheckIntroduction && buyerSchedule.hasIntroduction()}">
+                <div th:text="${buyerSchedule.getIntroduction()}"></div>
+            </div>
+        </div>
+
+        <div th:if="${role} == 'seller'">
+            <div th:if="${!sellerCheckIntroduction || !sellerSchedule.hasIntroduction()}">
+                <p>등록된 거래희망 소개가 없습니다.</p>
+            </div>
+
+            <div th:if="${sellerCheckIntroduction && sellerSchedule.hasIntroduction()}">
+                <div th:text="${sellerSchedule.getIntroduction()}"></div>
+            </div>
+        </div>
+    </div>
 
         <!-- 캘린더 섹션 -->
         <div class="section">
@@ -144,16 +193,36 @@
             </div>
         </div>
 
+        <input type="hidden" id="selected-time" name="tradeTime" value="">
+
         <!-- 시간 선택 섹션 -->
         <div class="section">
             <h2>시간 선택</h2>
             <div id="selected-date-display"></div>
-            <select id="selected-time" name="tradeTime">
-                <option value="07:00">07:00</option>
-                <option value="08:00">08:00</option>
-                <option value="09:00">09:00</option>
+
+            <select id="selected-ampm" name="tradeAMPM" onchange="updateText()">
+                <option value="AM">오전</option>
+                <option value="PM">오후</option>
             </select>
+
+            <select id="selected-hour" name="tradeHour" onchange="updateText()">
+                <option value="1">1시</option>
+                <option value="2">2시</option>
+                <option value="3">3시</option>
+                <option value="4">4시</option>
+                <option value="5">5시</option>
+                <option value="6">6시</option>
+                <option value="7">7시</option>
+                <option value="8">8시</option>
+                <option value="9">9시</option>
+                <option value="10">10시</option>
+                <option value="11">11시</option>
+                <option value="12">12시</option>
+            </select>
+
+            <input type="number" id="selected-minute" min="0" max="59" value="0" oninput="updateText()" />
         </div>
+
 
     </div>
     <div class="button-container">
@@ -166,9 +235,31 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
 <script>
+function updateText() {
+    var ampm = document.getElementById("selected-ampm").value;
+    var hour = document.getElementById("selected-hour").value;
+    var minute = document.getElementById("selected-minute").value;
+    var time = "";
+
+    if (ampm === "PM") {
+        if (hour !== "12") {
+            hour = (parseInt(hour) + 12).toString().padStart(2, "0");
+        }
+    } else {
+        if (hour === "12") {
+            hour = "00";
+        } else {
+            hour = hour.toString().padStart(2, "0");
+        }
+    }
+
+    time = hour + ":" + minute.toString().padStart(2, "0");
+    document.getElementById("selected-time").value = time;
+}
+
 function getSelectedTime() {
-  var selectedTime = $('#selected-time').val();
-  return selectedTime;
+    var selectedTime = $('#selected-time').val();
+    return selectedTime;
 }
 
 $('#calendar').on('click', '.fc-day', function() {
@@ -211,10 +302,12 @@ function updateTradeSchedule() {
         processData: false,
         contentType: false,
         success: function(response) {
-            console.log('서버 응답:', response);
+            console.log('데이터 전송 성공');
+            console.log(response);
+          window.location.href = response;
         },
         error: function(xhr, status, error) {
-            console.log('에러:', error);
+            console.log(error);
         }
     });
 }

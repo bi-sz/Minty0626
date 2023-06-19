@@ -30,6 +30,7 @@ function App() {
             <div className="content">
                 <Routes>
                     <Route path="/writeForm" element={<WriteForm csrfToken={csrfToken} />} />
+                    <Route path="/writeForm/:boardId" element={<WriteForm csrfToken={csrfToken} />} />
                     <Route path="/boardList" element={<BoardList />} />
                     <Route path="/boardList/:boardType" element={<BoardList />} />
                     <Route path="/boardList/:boardType/:page" element={<BoardList />} />

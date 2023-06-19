@@ -208,10 +208,9 @@ public class ReviewService {
         return reviewRepository.existsByTradeIdAndWriterId(tradeId, writerId);
     }
 
-    public Review getReviewByTradeIdAndWriterId(Long tradeId, User writerId) {
+    public Review getReviewByTradeIdAndWriterId(Trade tradeId, User writerId) {
         Optional<Review> optionalReview = reviewRepository.findByTradeIdAndWriterId(tradeId, writerId);
         return optionalReview.orElse(null);
     }
-
 
 }

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Button, Carousel, Stack, Modal } from 'react-bootstrap';
 import '../css/boardDetail.css';
 import { formatDistanceToNow, parseISO } from 'date-fns';
@@ -16,20 +16,37 @@ function BoardDetail({ csrfToken }) {
   const [showModal, setShowModal] = useState(false); // Modal 표시 여부 상태
   const { id } = useParams();
 
-  const fetchData = () => {
-    axios
-      .get(`/api/boardDetail/${id}`)
-      .then((response) => {
+const navigate = useNavigate();
+
+   const handleEditClick = () => {
+     navigate(`/writeForm/${id}`, { state: { tradeBoard, imageList } });
+   };
+
+const fetchData = () => {
+  axios
+    .get(`/api/boardDetail/${id}`)
+    .then((response) => {
+      if (response.status === 200) {
         setTradeBoard(response.data.tradeBoard);
         setNickName(response.data.nickName);
         let list = [...response.data.imageList];
         setImageList(list);
         setIsAuthor(response.data.isAuthor);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  };
+      } else {
+        alert("알 수 없는 오류");
+        window.history.back(); // 이전 페이지로 이동
+      }
+    })
+    .catch((error) => {
+      if (error.response && error.response.data && error.response.data.error) {
+        alert(error.response.data.error);
+      } else {
+        alert("알 수 없는 오류");
+      }
+      window.history.back(); // 이전 페이지로 이동
+    });
+};
+
 
   useEffect(() => {
     fetchData();
@@ -125,7 +142,7 @@ function BoardDetail({ csrfToken }) {
         <Col md={12}></Col>
        <Col md={3}>
        <div>
-       {isAuthor && <Button variant="primary" style={{gap:3}}>수정</Button>}
+       {isAuthor && <Button variant="primary" onClick={handleEditClick} style={{gap:3}}>수정</Button>}
        {isAuthor && <Button variant="primary">삭제</Button>}
        </div>
        </Col>

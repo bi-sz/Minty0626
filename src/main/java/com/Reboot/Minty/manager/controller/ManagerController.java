@@ -5,6 +5,9 @@ import com.Reboot.Minty.manager.entity.Admin;
 import com.Reboot.Minty.manager.entity.ManagerStatistics;
 import com.Reboot.Minty.manager.repository.AdminRepository;
 import com.Reboot.Minty.manager.service.ManagerStatisticsService;
+import com.Reboot.Minty.member.entity.User;
+import com.Reboot.Minty.member.repository.UserRepository;
+import com.Reboot.Minty.member.service.UserService;
 import com.Reboot.Minty.support.entity.Ad;
 import com.Reboot.Minty.support.repository.AdRepository;
 import com.Reboot.Minty.support.service.AdService;
@@ -12,7 +15,11 @@ import com.Reboot.Minty.support.service.AdService;
 import io.jsonwebtoken.io.IOException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,20 +37,34 @@ public class ManagerController {
     private final AdService adService;
     private final AdRepository adRepository;
     private final AdminRepository adminRepository;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public ManagerController(ManagerStatisticsService managerStatisticsService, AdService adService, AdRepository adRepository, AdminRepository adminRepository) {
+    public ManagerController(ManagerStatisticsService managerStatisticsService, AdService adService, AdRepository adRepository, AdminRepository adminRepository, UserService userService, UserRepository userRepository) {
         this.managerStatisticsService = managerStatisticsService;
         this.adService = adService;
         this.adRepository = adRepository;
         this.adminRepository = adminRepository;
+        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @GetMapping(value = "/manager")
-    public String manager(Model model) {
+    public String manager(Model model, Pageable pageable) {
         List<ManagerStatisticsDto> statisticsList = managerStatisticsService.getAllManagerStatistics();
         List<Ad> ads = adService.getAllAds();
         Collections.reverse(ads);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // 인증 객체에서 로그인된 사용자의 정보를 가져옴
+        User loggedInUser = userRepository.findByEmail(authentication.getName());
+
+        Page<User> postList = userService.getPostList(pageable);
+        model.addAttribute("userList", postList.getContent());
+        model.addAttribute("user", loggedInUser);
+        model.addAttribute("postList", postList);
+        model.addAttribute("pageable", pageable);
         model.addAttribute("statisticsList", statisticsList);
         model.addAttribute("ads", ads);
         return "manager/dashboard";

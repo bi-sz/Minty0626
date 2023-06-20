@@ -126,7 +126,7 @@
                 </div>
 
                 <div th:if="${checkDay}">
-                    <div th:text="${schedule.getHopeDay()}"></div>
+                    <input type="text" th:value="${schedule.getHopeDay()}" id="hopeDay" readonly>
                 </div>
             </div>
 
@@ -137,7 +137,7 @@
                 </div>
 
                 <div th:if="${checkDuration}">
-                    <div th:text="${schedule.getHopeDuration()}"></div>
+                    <input type="text" th:value="${schedule.getHopeDuration()}" id="hopeDuration" readonly>
                 </div>
             </div>
 
@@ -148,7 +148,7 @@
                 </div>
 
                 <div th:if="${checkArea}">
-                    <div th:text="${schedule.getHopeArea()}"></div>
+                    <input type="text" th:value="${schedule.getHopeArea()}" id="hopeArea" readonly>
                 </div>
             </div>
 
@@ -159,31 +159,54 @@
                 </div>
 
                 <div th:if="${checkIntroduction}">
-                    <div th:text="${schedule.getIntroduction()}"></div>
+                    <input type="text" th:value="${schedule.getIntroduction()}" id="introduction" readonly>
                 </div>
             </div>
 
+            <!-- 수정하기 버튼 -->
+            <div id="editButtonContainer" style="display: none;">
+                <button onclick="toggleEditMode()">수정 완료</button>
+            </div>
+            <div id="normalButtonContainer">
+                <button onclick="toggleEditMode()">수정하기</button>
+            </div>
         </div>
     </div>
 
     <!-- 일정 목록 섹션 -->
     <div class="section">
         <h2>일정 목록 섹션</h2>
-
-
     </div>
-
-
-    <!-- 거래 가능 시간 수정 및 입력 섹션 -->
-    <div class="section" id="time-selection-section" style="display: none;">
-        <h2>수정</h2>
-    </div>
-
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+        <script>
+    function toggleEditMode() {
+        var editButtonContainer = document.getElementById('editButtonContainer');
+        var normalButtonContainer = document.getElementById('normalButtonContainer');
+        var hopeDay = document.getElementById('hopeDay');
+        var hopeDuration = document.getElementById('hopeDuration');
+        var hopeArea = document.getElementById('hopeArea');
+        var introduction = document.getElementById('introduction');
 
+        if (editButtonContainer.style.display === 'none') {
+            editButtonContainer.style.display = 'block';
+            normalButtonContainer.style.display = 'none';
+            hopeDay.contentEditable = true;
+            hopeDuration.contentEditable = true;
+            hopeArea.contentEditable = true;
+            introduction.contentEditable = true;
+        } else {
+            editButtonContainer.style.display = 'none';
+            normalButtonContainer.style.display = 'block';
+            hopeDay.contentEditable = false;
+            hopeDuration.contentEditable = false;
+            hopeArea.contentEditable = false;
+            introduction.contentEditable = false;
+        }
+    }
+</script>
 </body>
 </html>

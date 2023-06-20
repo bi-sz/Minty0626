@@ -1,5 +1,7 @@
 package com.Reboot.Minty.review.service;
 
+import com.Reboot.Minty.manager.entity.ManagerStatistics;
+import com.Reboot.Minty.manager.repository.ManagerStatisticsRepository;
 import com.Reboot.Minty.member.entity.User;
 import com.Reboot.Minty.member.repository.UserRepository;
 import com.Reboot.Minty.member.service.UserService;
@@ -9,17 +11,14 @@ import com.Reboot.Minty.review.repository.ReviewRepository;
 import com.Reboot.Minty.trade.entity.Trade;
 import com.Reboot.Minty.trade.repository.TradeRepository;
 import com.Reboot.Minty.trade.service.TradeService;
-import jakarta.persistence.EntityExistsException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,19 +26,20 @@ import java.util.Optional;
 @Service
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-    private UserRepository userRepository;
-    private TradeRepository tradeRepository;
-    private TradeService tradeService;
-    private UserService userService;
+    private final UserRepository userRepository;
+    private final TradeRepository tradeRepository;
+    private final TradeService tradeService;
+    private final UserService userService;
+    private final ManagerStatisticsRepository managerStatisticsRepository;
 
     @Autowired
-    public ReviewService(ReviewRepository reviewRepository,UserRepository userRepository, UserService userService, TradeRepository tradeRepository,TradeService tradeService) {
+    public ReviewService(ReviewRepository reviewRepository, UserRepository userRepository, UserService userService, TradeRepository tradeRepository, TradeService tradeService, ManagerStatisticsRepository managerStatisticsRepository) {
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
         this.tradeRepository = tradeRepository;
         this.tradeService = tradeService;
         this.userService = userService;
-
+        this.managerStatisticsRepository = managerStatisticsRepository;
     }
 
     //내가 작성한 후기
@@ -70,21 +70,9 @@ public class ReviewService {
     }
 
     public void createReview(ReviewDto reviewDto) {
-        System.out.println("Creating review: " + reviewDto.getContents());
-        System.out.println("Creating review: " + reviewDto.getRating());
-        System.out.println("Creating review: " + reviewDto.getWriterId());
-        System.out.println("Creating review: " + reviewDto.getReceiverId());
-        System.out.println("Creating review: " + reviewDto.getImageUrl());
-        System.out.println("Creating review: " + reviewDto.getNickname());
-        System.out.println("Creating review: " + reviewDto.getId());
-        System.out.println("Creating review: " + reviewDto.getTradeId());
-
         Review review = convertToEntity(reviewDto);
-
-
         Trade trade = reviewDto.getTradeId();
         User user = reviewDto.getWriterId();
-
         User receiver = findReceiverId(trade, user);
 
         if (trade.getSellerId().equals(user.getId())) {
@@ -104,7 +92,17 @@ public class ReviewService {
         review.setWriteTime(currentTime);
 
         // 리뷰를 리포지토리에 저장합니다
-        review = reviewRepository.save(review);
+        try {
+            review = reviewRepository.save(review);
+            ManagerStatistics managerStatistics = managerStatisticsRepository.findByVisitDate(LocalDate.now());
+            if (managerStatistics != null) {
+                int reviewCount = managerStatistics.getReview() + 1;
+                managerStatistics.setReview(reviewCount);
+                managerStatisticsRepository.save(managerStatistics);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         // 이미지 파일을 저장하고 이미지 파일의 경로를 엔티티에 저장합니다
         String imageUrl = storeImageFile(review.getId(), reviewDto.getImageFile());

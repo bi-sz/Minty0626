@@ -121,23 +121,27 @@
 
             <!-- 거래 희망 요일 -->
             <div>
-                <div th:if="${!checkDay}">
-                    <p>등록된 거래희망 요일정보가 없습니다.</p>
+                <div th:if="${schedule.hopeDays.isEmpty()}">
+                    <p>등록된 거래 희망 요일 정보가 없습니다.</p>
                 </div>
 
-                <div th:if="${checkDay}">
-                    <input type="text" th:value="${schedule.getHopeDay()}" id="hopeDay" readonly>
+                <div th:if="${!schedule.hopeDays.isEmpty()}">
+                    <ul>
+                        <li th:each="day : ${schedule.hopeDays}" th:text="${day}" />
+                    </ul>
                 </div>
             </div>
 
             <!-- 거래 희망 시간 -->
             <div>
-                <div th:if="${!checkDuration}">
-                    <p>등록된 거래희망 시간정보가 없습니다.</p>
+                <div th:if="${schedule.hopeDurations.isEmpty()}">
+                    <p>등록된 거래 희망 시간 정보가 없습니다.</p>
                 </div>
 
-                <div th:if="${checkDuration}">
-                    <input type="text" th:value="${schedule.getHopeDuration()}" id="hopeDuration" readonly>
+                <div th:if="${!schedule.hopeDurations.isEmpty()}">
+                    <ul>
+                        <li th:each="duration : ${schedule.hopeDurations}" th:text="${duration}" />
+                    </ul>
                 </div>
             </div>
 

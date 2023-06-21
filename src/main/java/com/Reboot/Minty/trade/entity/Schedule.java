@@ -25,11 +25,13 @@ public class Schedule {
 
     private String hopeArea;
 
-    private DayOfWeek hopeDay;
+    @ManyToOne
+    @JoinColumn(name = "hope_day_id")
+    private ScheduleDay hopeDay;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "schedule_duration_id")
-    private ScheduleDuration scheduleDuration;
+    private ScheduleDuration hopeDuration;
 
     private String introduction;
 }

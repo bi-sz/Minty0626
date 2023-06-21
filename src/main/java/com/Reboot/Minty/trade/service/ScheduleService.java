@@ -27,21 +27,23 @@ public class ScheduleService {
     }
 
     //해당 유저의 Schedule 정보가 있는지 확인
+    // 해당 유저의 Schedule 정보가 있는지 확인
     public boolean checkArea(Schedule schedule, String hopeArea) {
-        return scheduleRepository.existsByUserIdAndHopeArea(schedule.getUserId(), hopeArea);
+        return schedule.getHopeArea() != null && schedule.getHopeArea().equals(hopeArea);
     }
 
     public boolean checkDay(Schedule schedule, DayOfWeek hopeDay) {
-        return scheduleRepository.existsByUserIdAndHopeDay(schedule.getUserId(), hopeDay);
+        return schedule.getHopeDay() != null && schedule.getHopeDay().getHopeDay().equals(hopeDay);
     }
 
     public boolean checkDuration(Schedule schedule, ScheduleDuration scheduleDuration) {
-        return scheduleRepository.existsByUserIdAndScheduleDuration(schedule.getUserId(), scheduleDuration);
+        return schedule.getHopeDuration() != null && schedule.getHopeDuration().equals(scheduleDuration);
     }
 
     public boolean checkIntroduction(Schedule schedule, String introduction) {
-        return scheduleRepository.existsByUserIdAndIntroduction(schedule.getUserId(), introduction);
+        return schedule.getIntroduction() != null && schedule.getIntroduction().equals(introduction);
     }
+
 
 
 }

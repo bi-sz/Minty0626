@@ -29,7 +29,6 @@ public class ScheduleController {
     private final TradeBoardService tradeBoardService;
     private final UserService userService;
     private final ScheduleRepository scheduleRepository;
-
     private final ScheduleService scheduleService;
 
     @Autowired
@@ -42,13 +41,13 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedule/{tradeId}")
-    public String schedule(@PathVariable(value = "tradeId") Long tradeId,Model model, HttpServletRequest request) {
+    public String schedule(@PathVariable(value = "tradeId") Long tradeId, Model model, HttpServletRequest request) {
         HttpSession session = request.getSession();
         Long userId = (Long) session.getAttribute("userId");
         Trade trade = tradeService.getTradeDetail(tradeId);
         String role = tradeService.getRoleForTrade(tradeId, userId);
-        User buyer= userService.getUserInfoById(trade.getBuyerId().getId());
-        User seller= userService.getUserInfoById(trade.getSellerId().getId());
+        User buyer = userService.getUserInfoById(trade.getBuyerId().getId());
+        User seller = userService.getUserInfoById(trade.getSellerId().getId());
         Schedule buyerSchedule = scheduleRepository.findByUserId(buyer);
         Schedule sellerSchedule = scheduleRepository.findByUserId(seller);
 
@@ -63,13 +62,13 @@ public class ScheduleController {
 
         if (buyerSchedule != null) {
             if (buyerSchedule.getHopeDay() != null) {
-                buyerCheckDay = scheduleService.checkDay(buyerSchedule, buyerSchedule.getHopeDay());
+                buyerCheckDay = scheduleService.checkDay(buyerSchedule, buyerSchedule.getHopeDay().getHopeDay());
             }
             if (buyerSchedule.getHopeArea() != null) {
                 buyerCheckArea = scheduleService.checkArea(buyerSchedule, buyerSchedule.getHopeArea());
             }
-            if (buyerSchedule.getScheduleDuration() != null) {
-                buyerCheckDuration = scheduleService.checkDuration(buyerSchedule, buyerSchedule.getScheduleDuration());
+            if (buyerSchedule.getHopeDuration() != null) {
+                buyerCheckDuration = scheduleService.checkDuration(buyerSchedule, buyerSchedule.getHopeDuration());
             }
             if (buyerSchedule.getIntroduction() != null) {
                 buyerCheckIntroduction = scheduleService.checkIntroduction(buyerSchedule, buyerSchedule.getIntroduction());
@@ -78,13 +77,13 @@ public class ScheduleController {
 
         if (sellerSchedule != null) {
             if (sellerSchedule.getHopeDay() != null) {
-                sellerCheckDay = scheduleService.checkDay(sellerSchedule, sellerSchedule.getHopeDay());
+                sellerCheckDay = scheduleService.checkDay(sellerSchedule, sellerSchedule.getHopeDay().getHopeDay());
             }
             if (sellerSchedule.getHopeArea() != null) {
                 sellerCheckArea = scheduleService.checkArea(sellerSchedule, sellerSchedule.getHopeArea());
             }
-            if (sellerSchedule.getScheduleDuration() != null) {
-                sellerCheckDuration = scheduleService.checkDuration(sellerSchedule, sellerSchedule.getScheduleDuration());
+            if (sellerSchedule.getHopeDuration() != null) {
+                sellerCheckDuration = scheduleService.checkDuration(sellerSchedule, sellerSchedule.getHopeDuration());
             }
             if (sellerSchedule.getIntroduction() != null) {
                 sellerCheckIntroduction = scheduleService.checkIntroduction(sellerSchedule, sellerSchedule.getIntroduction());
@@ -103,18 +102,18 @@ public class ScheduleController {
         model.addAttribute("buyerCheckIntroduction", buyerCheckIntroduction);
 
         model.addAttribute("trade", trade);
-        model.addAttribute("role",role);
-        model.addAttribute("buyer",buyer);
-        model.addAttribute("seller",seller);
+        model.addAttribute("role", role);
+        model.addAttribute("buyer", buyer);
+        model.addAttribute("seller", seller);
         model.addAttribute("tradeId", tradeId);
-        model.addAttribute("buyerSchedule",buyerSchedule);
-        model.addAttribute("sellerSchedule",sellerSchedule);
+        model.addAttribute("buyerSchedule", buyerSchedule);
+        model.addAttribute("sellerSchedule", sellerSchedule);
         return "trade/schedule";
     }
 
     @PostMapping("/updateTradeSchedule")
     @Transactional
-    public ResponseEntity TradeSchedule(HttpSession session,@RequestParam("tradeId") Long tradeId, @RequestParam("tradeDate") LocalDate tradeDate, @RequestParam("tradeTime") LocalTime tradeTime) {
+    public ResponseEntity<String> tradeSchedule(HttpSession session, @RequestParam("tradeId") Long tradeId, @RequestParam("tradeDate") LocalDate tradeDate, @RequestParam("tradeTime") LocalTime tradeTime) {
         Long userId = (Long) session.getAttribute("userId");
         tradeService.updateTradeSchedule(tradeId, tradeDate, tradeTime);
         tradeService.updateScheduleCheck(tradeId, userId);
@@ -124,19 +123,18 @@ public class ScheduleController {
     }
 
     @PostMapping("/confirmationSchedule")
-    public String confirmationSchedule(HttpSession session,@RequestParam("tradeId") Long tradeId) {
+    public String confirmationSchedule(HttpSession session, @RequestParam("tradeId") Long tradeId) {
         Long userId = (Long) session.getAttribute("userId");
         String role = tradeService.getRoleForTrade(tradeId, userId);
-        tradeService.confirmationSchedule(tradeId, userId,role);
+        tradeService.confirmationSchedule(tradeId, userId, role);
 
         return "redirect:/trade/" + tradeId;
     }
 
     @GetMapping("/changeSchedule/{tradeId}")
-    public String changeSchedule(@PathVariable("tradeId") Long tradeId){
+    public String changeSchedule(@PathVariable("tradeId") Long tradeId) {
         tradeService.changeTrade(tradeId);
 
         return "redirect:/trade/" + tradeId;
     }
-
 }

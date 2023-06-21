@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ScheduleListController {
     private final UserRepository userRepository;
-
     private final ScheduleRepository scheduleRepository;
-
     private final ScheduleService scheduleService;
 
     public ScheduleListController(UserRepository userRepository, ScheduleRepository scheduleRepository, ScheduleService scheduleService) {
@@ -39,13 +37,13 @@ public class ScheduleListController {
 
         if (schedule != null) {
             if (schedule.getHopeDay() != null) {
-                checkDay = scheduleService.checkDay(schedule, schedule.getHopeDay());
+                checkDay = scheduleService.checkDay(schedule, schedule.getHopeDay().getHopeDay());
             }
             if (schedule.getHopeArea() != null) {
                 checkArea = scheduleService.checkArea(schedule, schedule.getHopeArea());
             }
-            if (schedule.getScheduleDuration() != null) {
-                checkDuration = scheduleService.checkDuration(schedule, schedule.getScheduleDuration());
+            if (schedule.getHopeDuration() != null) {
+                checkDuration = scheduleService.checkDuration(schedule, schedule.getHopeDuration());
             }
             if (schedule.getIntroduction() != null) {
                 checkIntroduction = scheduleService.checkIntroduction(schedule, schedule.getIntroduction());
@@ -61,5 +59,4 @@ public class ScheduleListController {
 
         return "trade/scheduleList";
     }
-
 }

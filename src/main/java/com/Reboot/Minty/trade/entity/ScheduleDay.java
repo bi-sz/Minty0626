@@ -18,7 +18,7 @@ public class ScheduleDay {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User userId;
 
     private int sunday;
 
@@ -34,14 +34,4 @@ public class ScheduleDay {
 
     private int saturday;
 
-    public DayOfWeek getHopeDay() {
-        if (sunday == 1) return DayOfWeek.SUNDAY;
-        if (monday == 1) return DayOfWeek.MONDAY;
-        if (tuesday == 1) return DayOfWeek.TUESDAY;
-        if (wednesday == 1) return DayOfWeek.WEDNESDAY;
-        if (thursday == 1) return DayOfWeek.THURSDAY;
-        if (friday == 1) return DayOfWeek.FRIDAY;
-        if (saturday == 1) return DayOfWeek.SATURDAY;
-        return null;
-    }
 }

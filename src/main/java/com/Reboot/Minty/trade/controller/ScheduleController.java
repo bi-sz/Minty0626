@@ -3,8 +3,13 @@ package com.Reboot.Minty.trade.controller;
 import com.Reboot.Minty.member.entity.User;
 import com.Reboot.Minty.member.service.UserService;
 import com.Reboot.Minty.trade.entity.Schedule;
+import com.Reboot.Minty.trade.entity.ScheduleDay;
+import com.Reboot.Minty.trade.entity.ScheduleDuration;
 import com.Reboot.Minty.trade.entity.Trade;
+import com.Reboot.Minty.trade.repository.ScheduleDayRepository;
+import com.Reboot.Minty.trade.repository.ScheduleDurationRepository;
 import com.Reboot.Minty.trade.repository.ScheduleRepository;
+import com.Reboot.Minty.trade.service.ScheduleListService;
 import com.Reboot.Minty.trade.service.ScheduleService;
 import com.Reboot.Minty.trade.service.TradeService;
 import com.Reboot.Minty.tradeBoard.service.TradeBoardService;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Controller
 public class ScheduleController {
@@ -31,13 +37,22 @@ public class ScheduleController {
     private final ScheduleRepository scheduleRepository;
     private final ScheduleService scheduleService;
 
+    private final ScheduleListService scheduleListService;
+
+    private final ScheduleDayRepository scheduleDayRepository;
+
+    private final ScheduleDurationRepository scheduleDurationRepository;
+
     @Autowired
-    public ScheduleController(TradeService tradeService, TradeBoardService tradeBoardService, UserService userService, ScheduleRepository scheduleRepository, ScheduleService scheduleService) {
+    public ScheduleController(TradeService tradeService, TradeBoardService tradeBoardService, UserService userService, ScheduleRepository scheduleRepository, ScheduleService scheduleService, ScheduleListService scheduleListService, ScheduleDayRepository scheduleDayRepository, ScheduleDurationRepository scheduleDurationRepository) {
         this.tradeService = tradeService;
         this.tradeBoardService = tradeBoardService;
         this.userService = userService;
         this.scheduleRepository = scheduleRepository;
         this.scheduleService = scheduleService;
+        this.scheduleListService = scheduleListService;
+        this.scheduleDayRepository = scheduleDayRepository;
+        this.scheduleDurationRepository = scheduleDurationRepository;
     }
 
     @GetMapping("/schedule/{tradeId}")
@@ -48,8 +63,8 @@ public class ScheduleController {
         String role = tradeService.getRoleForTrade(tradeId, userId);
         User buyer = userService.getUserInfoById(trade.getBuyerId().getId());
         User seller = userService.getUserInfoById(trade.getSellerId().getId());
-        Schedule buyerSchedule = scheduleRepository.findByUserId(buyer);
-        Schedule sellerSchedule = scheduleRepository.findByUserId(seller);
+        Schedule buyerSchedule = scheduleRepository.findByUser(buyer);
+        Schedule sellerSchedule = scheduleRepository.findByUser(seller);
 
         boolean buyerCheckDay = false;
         boolean buyerCheckArea = false;
@@ -61,34 +76,41 @@ public class ScheduleController {
         boolean sellerCheckIntroduction = false;
 
         if (buyerSchedule != null) {
-            if (buyerSchedule.getHopeDay() != null) {
-                buyerCheckDay = scheduleService.checkDay(buyerSchedule, buyerSchedule.getHopeDay().getHopeDay());
-            }
             if (buyerSchedule.getHopeArea() != null) {
+                // buyerSchedule의 HopeArea 정보가 있는 경우
                 buyerCheckArea = scheduleService.checkArea(buyerSchedule, buyerSchedule.getHopeArea());
             }
-            if (buyerSchedule.getHopeDuration() != null) {
-                buyerCheckDuration = scheduleService.checkDuration(buyerSchedule, buyerSchedule.getHopeDuration());
-            }
             if (buyerSchedule.getIntroduction() != null) {
-                buyerCheckIntroduction = scheduleService.checkIntroduction(buyerSchedule, buyerSchedule.getIntroduction());
+                // buyerSchedule의 Introduction 정보가 있는 경우
+                buyerCheckIntroduction = scheduleService.checkIntroduction(buyerSchedule);
             }
         }
 
         if (sellerSchedule != null) {
-            if (sellerSchedule.getHopeDay() != null) {
-                sellerCheckDay = scheduleService.checkDay(sellerSchedule, sellerSchedule.getHopeDay().getHopeDay());
-            }
             if (sellerSchedule.getHopeArea() != null) {
+                // sellerSchedule의 HopeArea 정보가 있는 경우
                 sellerCheckArea = scheduleService.checkArea(sellerSchedule, sellerSchedule.getHopeArea());
             }
-            if (sellerSchedule.getHopeDuration() != null) {
-                sellerCheckDuration = scheduleService.checkDuration(sellerSchedule, sellerSchedule.getHopeDuration());
-            }
             if (sellerSchedule.getIntroduction() != null) {
-                sellerCheckIntroduction = scheduleService.checkIntroduction(sellerSchedule, sellerSchedule.getIntroduction());
+                // sellerSchedule의 Introduction 정보가 있는 경우
+                sellerCheckIntroduction = scheduleService.checkIntroduction(sellerSchedule);
             }
         }
+
+        buyerCheckDay = scheduleService.checkDay(buyer);
+        buyerCheckDuration = scheduleService.checkDuration(buyer);
+        sellerCheckDay = scheduleService.checkDay(seller);
+        sellerCheckDuration = scheduleService.checkDuration(seller);
+
+        ScheduleDay buyerScheduleDay = scheduleListService.getScheduleDay(buyer);
+        List<ScheduleDuration> buyerScheduleDuration = scheduleListService.getScheduleDuration(buyer);
+        ScheduleDay sellerScheduleDay = scheduleListService.getScheduleDay(seller);
+        List<ScheduleDuration> sellerScheduleDuration = scheduleListService.getScheduleDuration(seller);
+
+        model.addAttribute("buyerScheduleDay", buyerScheduleDay);
+        model.addAttribute("buyerScheduleDuration", buyerScheduleDuration);
+        model.addAttribute("sellerScheduleDay", sellerScheduleDay);
+        model.addAttribute("sellerScheduleDuration", sellerScheduleDuration);
 
         model.addAttribute("sellerSchedule", sellerSchedule);
         model.addAttribute("buyerSchedule", buyerSchedule);

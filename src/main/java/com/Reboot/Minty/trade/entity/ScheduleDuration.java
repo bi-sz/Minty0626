@@ -20,8 +20,6 @@ public class ScheduleDuration {
     @JoinColumn(name = "user_id")
     private User userId;
 
-    private int count;
-
     private LocalTime startTime;
 
     private LocalTime endTime;

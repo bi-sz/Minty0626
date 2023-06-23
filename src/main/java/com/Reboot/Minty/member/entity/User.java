@@ -52,7 +52,7 @@ public class User {
     private int exp;
     @Column(nullable = false, name = "balance")
     private int balance;
-    @Column(nullable = false, name = "point", columnDefinition = "INT DEFAULT 0")
+    @Column(nullable = false, name = "point")
     private int point;
 
     public User(String name, String email, String ageRange, String mobile, String gender) {
@@ -72,7 +72,6 @@ public class User {
         user.setAgeRange(joinDto.getAgeRange());
         user.setMobile(joinDto.getMobile());
         user.setGender(joinDto.getGender());
-        user.setNickName(joinDto.getNickName());
         user.setRole(Role.USER);
         user.setLevel(1);
         user.setExp(0);

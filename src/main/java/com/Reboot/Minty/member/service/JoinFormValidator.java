@@ -39,5 +39,9 @@ public class JoinFormValidator implements Validator {
             errors.rejectValue("mobile", "invalid.mobile",
                     new Object[]{joinDto.getMobile()}, "이미 사용중인 핸드폰 번호입니다.");
         }
+        if (!joinDto.getPassword().equals(joinDto.getPasswordConfirm())) {
+            errors.rejectValue("passwordConfirm", "invalid.passwordConfirm",
+                    new Object[]{joinDto.getPasswordConfirm()}, "비밀번호가 일치하지 않습니다.");
+        }
     }
 }

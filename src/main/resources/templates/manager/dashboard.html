@@ -5,6 +5,7 @@
 <head>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
     <style>
     /* 전체 영역 스타일 */
     .container {
@@ -232,6 +233,7 @@
         <!-- 컨텐츠 영역에 공간을 추가하려면 빈 div 추가 -->
         <!--대시보드-->
         <div class="board-area dash-1 show">
+
             <div class="board-visitor">
                 <div class="board-item-visitor">
                     <div class="chart-container">
@@ -382,6 +384,7 @@
         <div class="board-area content-c-1">
             컨텐츠관리
         </div>
+
         <!--마케팅관리-->
         <div class="board-area marketing-c-1" id="search-results">
             마케팅관리
@@ -414,6 +417,8 @@
                 </tbody>
             </table>
         </div>
+
+
         <!--수입관리-->
         <div class="board-area revenue-1">
             수입관리
@@ -464,51 +469,62 @@
     <script type="text/javascript" th:src="@{/js/dashboard.js}"></script>
 
     <script>
-    var token = $("meta[name='_csrf']").attr("content");
+
+var token = $("meta[name='_csrf']").attr("content");
 var header = $("meta[name='_csrf_header']").attr("content");
 
 $(document).ready(function() {
-    $("#search-btn").click(function() {
-        var keyword = $("#keyword").val();
-        console.log(keyword);
+  $('#keyword').keydown(function(event) {
+    if (event.keyCode === 13) { // Check if the Enter key is pressed (keyCode 13)
+      event.preventDefault(); // Prevent the default form submission
+      performSearch(); // 검색 로직 실행
+    }
+  });
 
-        // JSON 형식으로 데이터 생성
-        var requestData = JSON.stringify({ keyword: keyword });
+  $("#search-btn").click(function() {
+    performSearch(); // 검색 로직 실행
+  });
 
-        $.ajax({
-            type: "POST",
-            url: "/manager",
-            data: requestData,
-            contentType: "application/json",
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader(header, token); // 헤더에 CSRF 토큰 추가
-            },
-            success: function(response) {
-                // 검색 결과를 업데이트
-                var ads = response; // 서버에서 반환된 광고 목록
-                var adsList = $("#ads-list"); // 테이블의 tbody 요소
+  function performSearch() {
+    var keyword = $("#keyword").val();
+    console.log(keyword);
 
-                // 기존의 테이블 내용 삭제
-                adsList.empty();
+    // JSON 형식으로 데이터 생성
+    var requestData = JSON.stringify({ keyword: keyword });
 
-                // 광고 목록을 테이블에 추가
-                ads.forEach(function(ad) {
-                    var row = $("<tr>");
-                    row.append($("<td>").text(ad.id));
-                    row.append($("<td>").html('<p onclick="adwindow(' + ad.id + ')">' + ad.title + '</p>'));
-                    row.append($("<td>").text(ad.advertiserName));
-                    row.append($("<td>").text(ad.requestDate));
-                    row.append($("<td>").text(ad.status));
-                    adsList.append(row);
-                });
-            },
-            error: function(xhr, status, error) {
-                // 에러 처리
-            }
+    $.ajax({
+      type: "POST",
+      url: "/manager",
+      data: requestData,
+      contentType: "application/json",
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader(header, token); // 헤더에 CSRF 토큰 추가
+      },
+      success: function(response) {
+        // 검색 결과를 업데이트
+        var ads = response; // 서버에서 반환된 광고 목록
+        var adsList = $("#ads-list"); // 테이블의 tbody 요소
+
+        // 기존의 테이블 내용 삭제
+        adsList.empty();
+
+        // 광고 목록을 테이블에 추가
+        ads.forEach(function(ad) {
+          var row = $("<tr>");
+          row.append($("<td>").text(ad.id));
+          row.append($("<td>").html('<p onclick="adwindow(' + ad.id + ')">' + ad.title + '</p>'));
+          row.append($("<td>").text(ad.advertiserName));
+          row.append($("<td>").text(ad.requestDate));
+          row.append($("<td>").text(ad.status));
+          adsList.append(row);
         });
+      },
+      error: function(xhr, status, error) {
+        // 에러 처리
+      }
     });
+  }
 });
-
 
 
 function adwindow(adId) {
@@ -522,6 +538,8 @@ function adwindow(adId) {
 
   window.open(url, '_blank', 'width=' + popupWidth + ', height=' + popupHeight + ', left=' + leftPosition + ', top=' + topPosition);
 }
+
+
 
   // AJAX 요청을 통해 서버에서 방문자 수 데이터 가져오기
   $.ajax({

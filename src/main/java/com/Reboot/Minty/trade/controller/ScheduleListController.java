@@ -15,11 +15,15 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -95,6 +99,60 @@ public class ScheduleListController {
 
 
         return "trade/scheduleList";
+    }
+
+    @PostMapping("/scheduleEdit")
+    public String scheduleEdit(@RequestParam(name = "scheduleDay" ,required = false) List<Integer> days ,
+                               @RequestParam(name = "introduction", required = false) String introduction,
+                               @RequestParam(name = "startTime" , required = false) List<String> startTimeStrings,
+                               @RequestParam(name = "endTime",required = false) List<String> endTimeStrings,
+                               HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+
+        System.out.println(days);
+        System.out.println(introduction);
+        System.out.println(startTimeStrings);
+        System.out.println(endTimeStrings);
+
+        // scheduleDay 엔티티 생성
+        ScheduleDay scheduleDay = new ScheduleDay();
+
+        scheduleDay.setUserId(user);
+        scheduleDay.setSunday(days.get(0));
+        scheduleDay.setMonday(days.get(1));
+        scheduleDay.setTuesday(days.get(2));
+        scheduleDay.setWednesday(days.get(3));
+        scheduleDay.setThursday(days.get(4));
+        scheduleDay.setFriday(days.get(5));
+        scheduleDay.setSaturday(days.get(6));
+
+        scheduleListService.saveScheduleDay(scheduleDay);
+
+        // ScheduleDuration 엔티티 생성
+        for (int i = 0; i < startTimeStrings.size(); i++) {
+            String startTimeString = startTimeStrings.get(i);
+            String endTimeString = endTimeStrings.get(i);
+
+            ScheduleDuration scheduleDuration = new ScheduleDuration();
+
+            scheduleDuration.setUserId(user);
+            scheduleDuration.setStartTime(LocalTime.parse(startTimeString));
+            scheduleDuration.setEndTime(LocalTime.parse(endTimeString));
+
+            scheduleListService.saveScheduleDuration(scheduleDuration);
+        }
+
+        if (introduction != null) {
+            Schedule schedule = new Schedule();
+            schedule.setUser(user);
+            schedule.setIntroduction(introduction);
+
+            scheduleListService.saveSchedule(schedule);
+        }
+
+        // 저장 또는 업데이트 후에 리다이렉트할 페이지로 이동
+        return "redirect:/scheduleList";
     }
 
 }
